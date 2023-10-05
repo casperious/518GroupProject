@@ -14,6 +14,7 @@ const MayorSchema = new mongoose.Schema({
     dateAppointed: Date,
     dateEnd: Date,
     budget: Number,
+    userId: mongoose.Schema.Types.ObjectId,
 });
 
 const Mayor = mongoose.model("Mayor", MayorSchema);
