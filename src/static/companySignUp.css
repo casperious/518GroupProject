@@ -1,0 +1,18 @@
+.scontainer {
+    height: 100vh;
+  }
+  
+.form-control {
+    margin-bottom: 10px;
+  }
+#ttle {
+    text-align: center;
+    color: blue;
+}
+.sbutton1 {
+    display: block;
+    margin: 0 auto;
+}
+.lbutton1 {
+  float: right;
+}

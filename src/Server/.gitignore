@@ -1,0 +1,2 @@
+# ignoring the node modules in Server
+/node_modules
