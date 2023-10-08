@@ -3,6 +3,7 @@ const cors = require('cors');
 const app = express();
 const mongoose = require('mongoose');
 const MayorSchema = require('./Schema/MayorSchema.jsx');
+const Cityofficials = require('./Schema/CityofficialsSchema.jsx');
 //const AssignedSchema = require('./Schema/AssignedSchema.js');
 //const TeamNameSchema = require('./Schema/TeamNameSchema.js');
 //const TeamName = require('./Schema/TeamNameSchema.js');
