@@ -1,8 +1,11 @@
 import logo from './logo.svg';
 import './App.css';
-import { Routes, Route, useLocation, BrowserRouter } from 'react-router-dom';
+import { Routes, Route, useLocation, BrowserRouter, Navigate, useNavigate } from 'react-router-dom';
+import SignUpCompany from './Components/SignUpCompany'
+import Home from './Components/Home'
 
 function App() {
+  const navigate = useNavigate()
   return (
     <Routes>
       <Route path='/' element={
@@ -21,8 +24,13 @@ function App() {
               Learn React
             </a>
           </header>
+          <button onClick={(event) => {
+            navigate("SignUpCompany")
+          }}>To SignUp Company Page</button>
         </div>
-      }></Route>
+      }/>
+      <Route path='SignUpCompany' element={<SignUpCompany/>}/>
+      <Route path='Home' element={<Home/>}/>
     </Routes>
   );
 }

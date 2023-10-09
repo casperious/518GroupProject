@@ -1,4 +1,5 @@
-const Companies = require("../schemas/CompaniesSchema")
+//Uncomment After navya creates the schema
+//const Companies = require("../schemas/CompaniesSchema")
 const mongoose = require("../utils/mongoDB")
 
 module.exports.createCompany = async (req, res) => {
