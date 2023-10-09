@@ -5,7 +5,7 @@ import axios from "axios";
 import '../static/companySignUp.css'
 import { useNavigate } from 'react-router-dom';
 
-function SignUpCompany(props) {
+const SignUpCompany = () => {
 
     const [uname, setUname] = useState("");
 	  const [pword, setPword] = useState("");
@@ -17,9 +17,9 @@ function SignUpCompany(props) {
 
     
     useEffect(() => {
-        axios.get('http://localhost:9000/getDepartments')
-                .then((res) => setDepartments(res.data))
-              .catch((err) => alert('Error in Fetching Departments'))
+        //axios.get('http://localhost:9000/getDepartments')
+                //.then((res) => setDepartments(res.data))
+              //.catch((err) => alert('Error in Fetching Departments'))
       }, []);
 
 
@@ -65,7 +65,7 @@ function SignUpCompany(props) {
       <div className="container">
         <div className="row justify-content-center align-items-center scontainer">
           <form className="col-6">
-			<h2 id="ttle">Company SignUp</h2> <br/>
+			      <h2 id="ttle">Company SignUp</h2> <br/>
             <div className="form-group">
               <label htmlFor="uname">User Name:</label>
               <input type="text" className="form-control" id="uname" onChange={(e) => setUname(e.target.value)} name="username" />
