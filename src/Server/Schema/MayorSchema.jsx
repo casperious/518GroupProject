@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require('../utils/mongoDB');
 
 const MayorSchema = new mongoose.Schema({
     username: String,

@@ -1,14 +1,17 @@
+const {createUser, getUser} = require('./api/userAPIs.js')
+const {createCompany, getCompany} = require('./api/companyAPIs.js')
+
 const express = require('express');
 const cors = require('cors');
 const app = express();
+
+
 const mongoose = require('mongoose');
 const MayorSchema = require('./Schema/MayorSchema.jsx');
 const Cityofficials = require('./Schema/CityofficialsSchema.jsx');
-//const AssignedSchema = require('./Schema/AssignedSchema.js');
-//const TeamNameSchema = require('./Schema/TeamNameSchema.js');
-//const TeamName = require('./Schema/TeamNameSchema.js');
-//const Project = require('./Schema/ProjectSchema.js');
 
+
+const PORT = 9000;
 app.use(express.json());
 app.use(cors());
 app.use((req, res, next) => {
@@ -20,8 +23,18 @@ app.use((req, res, next) => {
     next();
 })
 
+app.get("/", (req, res) => {
+    res.status(200).send("API is live !");
+  });
 
+// Add Api calls here
+app.post('/createUser', createUser);
+app.post('/createCompany', createCompany);
+app.get('./')
 
+app.listen(PORT, () => {
+    console.log(`Server started at ${PORT}`);
+})
 const mongostring = "mongodb+srv://delegateAdmin:test12345@delegatecluster.rcuipff.mongodb.net/";
 mongoose.connect(mongostring);
 const database = mongoose.connection;
