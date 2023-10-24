@@ -28,9 +28,9 @@ function App() {
             navigate("SignUpCompany")
           }}>To SignUp Company Page</button>
         </div>
-      }/>
-      <Route path='SignUpCompany' element={<SignUpCompany/>}/>
-      <Route path='Home' element={<Home/>}/>
+      } />
+      <Route path='SignUpCompany' element={<SignUpCompany />} />
+      <Route path='Home' element={<Home />} />
     </Routes>
   );
 }

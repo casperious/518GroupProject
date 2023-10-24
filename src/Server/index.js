@@ -11,7 +11,7 @@ const MayorSchema = require('./Schema/MayorSchema.jsx');
 const Cityofficials = require('./Schema/CityofficialsSchema.jsx');
 
 
-const PORT = 9000;
+const PORT = 9500;
 app.use(express.json());
 app.use(cors());
 app.use((req, res, next) => {
@@ -26,9 +26,9 @@ app.use((req, res, next) => {
 // Add Api calls here
 //app.post('/createCompany', createCompany);
 
-app.listen(PORT, () => {
-    console.log(`Server started at ${PORT}`);
-})
+//app.listen(PORT, () => {
+//    console.log(`Server started at ${PORT}`);
+//})
 const mongostring = "mongodb+srv://delegateAdmin:test12345@delegatecluster.rcuipff.mongodb.net/";
 mongoose.connect(mongostring);
 const database = mongoose.connection;
@@ -37,6 +37,6 @@ const database = mongoose.connection;
 database.on('error', (error) => console.log(error));
 database.once('connected', () => console.log("Databse connected"));
 
-app.listen(9000, () => {
-    console.log(`Server started at ${9000}`); 
+app.listen(9500, () => {
+    console.log(`Server started at ${9500}`);
 })
