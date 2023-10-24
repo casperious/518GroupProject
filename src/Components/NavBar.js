@@ -24,15 +24,6 @@ function NavBar() {
             </li>
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="true">
-                Post
-              </a>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="/createPost">Create Post</a></li>
-                <li><a class="dropdown-item" href="/getProjects">View Posts</a></li>
-              </ul>
-            </li>
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="true">
                 Vote
               </a>
               <ul class="dropdown-menu">
