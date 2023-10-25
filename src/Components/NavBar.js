@@ -13,6 +13,19 @@ function NavBar() {
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="true">
+                Citizen
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="/voteMayor">Vote Mayor</a></li>
+                <li><a class="dropdown-item" href="/viewLaws">Vote Laws</a></li>
+                <li><a class="dropdown-item" href="/sendFeedback">Feedback</a></li>
+                <li><a class="dropdown-item" href="/sendComplaint">Complaint</a></li>
+              </ul>
+            </li>
+          </ul>
+          <ul className="navbar-nav ml-auto">
             <li class="nav-item">
               <a class="nav-link" href="/signup">SignUp</a>
             </li>
@@ -21,21 +34,6 @@ function NavBar() {
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/login">LogIn</a>
-            </li>
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="true">
-                Vote
-              </a>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="/voteMayor">Vote Mayor</a></li>
-                <li><a class="dropdown-item" href="/viewLaws">Vote Laws</a></li>
-              </ul>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/sendFeedback">Feedback</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/sendComplaint">Complaint</a>
             </li>
           </ul>
         </div>
