@@ -1,15 +1,16 @@
 //const {createUser, getUser} = require('./api/companyAPIs')
 //const {createCompany, getCompany} = require('./api/companyAPIs.js')
 
-const express = require('express');
-const cors = require('cors');
-const app = express();
-
-
 const mongoose = require('mongoose');
 const MayorSchema = require('./Schema/MayorSchema.jsx');
 const Cityofficials = require('./Schema/CityofficialsSchema.jsx');
 
+const express = require("express");
+const cors = require('cors');
+
+const app = express();
+const PORT = 9000;
+require("dotenv").config();
 
 const PORT = 9000;
 app.use(express.json());
@@ -23,6 +24,9 @@ app.use((req, res, next) => {
     next();
 })
 
+app.get("/", (req, res) => {
+    res.status(200).send("API is live !");
+  });
 // Add Api calls here
 //app.post('/createCompany', createCompany);
 
@@ -37,6 +41,9 @@ const database = mongoose.connection;
 database.on('error', (error) => console.log(error));
 database.once('connected', () => console.log("Databse connected"));
 
-app.listen(9500, () => {
+app.listen(9000, () => {
     console.log(`Server started at ${9000}`);
 })
+app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+  });

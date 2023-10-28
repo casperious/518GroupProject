@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import './App.css';
 import { Routes, Route, useLocation, BrowserRouter, Navigate, useNavigate } from 'react-router-dom';
 import SignUpCompany from './Components/SignUpCompany'
@@ -37,6 +36,12 @@ function App() {
       <Route path='/MayorDepartments' element={<MayorDepartments />}></Route>
     </Routes>
   );
+
+
+function App() {
+  return <div>
+    <h1>Hello World</h1>
+  </div>;
 }
 
 export default App;
