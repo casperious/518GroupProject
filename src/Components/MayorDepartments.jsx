@@ -66,6 +66,25 @@ export default function MayorDepartments() {
 
     }
 
+    const handleClickModify = (e) => {
+        console.log("Clicked table row " + e._id)
+        //props.history.push('/Team/${e.team_id}')
+        //const navigate = useNavigate();
+        // navigate(`/Team/${e._id}`)              // use ` (with tilda) not '     
+        axios.post('http://localhost:9000/assignStory', {
+            user_story_id: e._id,
+            user_id: user_id,
+        })
+            .then((res) => {
+                if (res.data)
+                    successMessage();
+                else
+                    alert("User story failed to post");
+            })
+            .catch((err) => alert("Error in post user story"));
+
+    }
+
     return (
         <div>
             <div className="container" style={{
@@ -78,6 +97,7 @@ export default function MayorDepartments() {
                             <th> Departments </th>
                             <th> Add </th>
                             <th> Delete</th>
+                            <th> Modify </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -85,7 +105,8 @@ export default function MayorDepartments() {
                             <tr key={dept._id} >
                                 <td>{dept.name}</td>
                                 <td><Button onClick={() => handleClickAdd(dept)}>Add</Button></td>
-                                <td><Button onClick={() => handleClickDelete(dept)}></Button></td>
+                                <td><Button onClick={() => handleClickDelete(dept)}>Delete </Button></td>
+                                <td><Button onClick={() => handleClickModify(dept)}>Modify</Button></td>
                             </tr>
                         )}
 
