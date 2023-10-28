@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button, Alert, } from "react-bootstrap";
 import '../App.css';
-import backgroundImage from './background.jpg';
+//import backgroundImage from './background.jpg';
 import axios from 'axios';
 
 export default function LoginPage() {
