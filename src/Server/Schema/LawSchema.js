@@ -1,9 +1,11 @@
 const mongoose = require('../utils/mongoDB');
 
 const LawSchema = new mongoose.Schema({
-    passed_by: mongoose.Schema.Types.ObjectId,
+    passedBy: mongoose.Schema.Types.ObjectId,
     description: String,
     title: String,
+    state: { Active: "Active", Pending: "Pending", Rejected: "Rejected" },
+    departmentId: mongoose.Schema.Types.ObjectId,
 });
 
 const Law = mongoose.model("Law", LawSchema);
