@@ -12,7 +12,6 @@ const app = express();
 const PORT = 9000;
 require("dotenv").config();
 
-const PORT = 9000;
 app.use(express.json());
 app.use(cors());
 app.use((req, res, next) => {
@@ -26,7 +25,7 @@ app.use((req, res, next) => {
 
 app.get("/", (req, res) => {
     res.status(200).send("API is live !");
-  });
+});
 // Add Api calls here
 //app.post('/createCompany', createCompany);
 
@@ -41,9 +40,6 @@ const database = mongoose.connection;
 database.on('error', (error) => console.log(error));
 database.once('connected', () => console.log("Databse connected"));
 
-app.listen(9000, () => {
-    console.log(`Server started at ${9000}`);
-})
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
-  });
+});
