@@ -10,6 +10,7 @@ import VoteMayor from './Components/VoteMayor';
 import AddFeedback from './Components/AddFeedback';
 import AddComplaint from './Components/AddComplaint';
 import ViewLaws from './Components/ViewLaws';
+import SignUpUser from './Components/SignUpUser';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -20,6 +21,7 @@ const router = createBrowserRouter(
       <Route path='/sendFeedback' element={<AddFeedback/>} />
       <Route path='/sendComplaint' element={<AddComplaint/>} />
       <Route path='/viewLaws' element={<ViewLaws/>} />
+      <Route path='/signup' element={<SignUpUser/>}></Route>
     </>
   )
 )
