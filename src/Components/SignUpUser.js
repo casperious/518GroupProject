@@ -5,23 +5,42 @@ import axios from "axios";
 import '../static/companySignUp.css'
 import { useNavigate } from 'react-router-dom';
 
-const onSignUp = (event, fName, lName, email, pword) => {
+const onSignUp = (event, fName, lName, email, username, pword, setGoToHome) => {
     event.preventDefault();
+    try {
+        axios.post("http://localhost:9000/createUser", {username: username, password: pword, firstName: fName, lastName: lName, emailId: email})
+        .then((res) => {
+            //something
+            console.log(res.data)
+            alert(`User Created Successfully!`)
+            setGoToHome(true);
+        })
+        .catch((err) => {
+            console.log(`SERVER ERROR: ${err}`);
+            alert(`ERROR: ${err}`)
+        })
+    }
+    catch (err) {
+        console.log(`SERVER ERROR: ${err}`);
+    }
 }
 
 const SignUpUser = () => {
+    const [username, setUsername] = useState("");
     const [fName, setFName] = useState("");
     const [lName, setLName] = useState("");
     const [email, setEmail] = useState("");
 	const [pword, setPword] = useState("");
+    const [goToHome, setGoToHome] = useState(false);
     const navigate = useNavigate();
 
     
     useEffect(() => {
-        //axios.get('http://localhost:9000/getDepartments')
-                //.then((res) => setDepartments(res.data))
-              //.catch((err) => alert('Error in Fetching Departments'))
-      }, []);
+        console.log(goToHome);
+        if(goToHome) {
+            navigate("/");
+        }
+      });
 
     return (
       <div className="container">
@@ -40,7 +59,12 @@ const SignUpUser = () => {
             <br/>
             <div className="form-group">
               <label htmlFor="email">Email:</label>
-              <input type="email" className="form-control" id="email" onChange={(e) => setPword(e.target.value)} name="email" />
+              <input type="email" className="form-control" id="email" onChange={(e) => setEmail(e.target.value)} name="email" />
+            </div>
+            <br/>
+            <div className="form-group">
+              <label htmlFor="email">Username:</label>
+              <input type="email" className="form-control" id="email" onChange={(e) => setUsername(e.target.value)} name="username" />
             </div>
             <br/>
             <div className="form-group">
@@ -48,12 +72,7 @@ const SignUpUser = () => {
               <input type="password" className="form-control" id="pword" onChange={(e) => setPword(e.target.value)} name="password" />
             </div>
             <br/>
-            <div className="form-group">
-              <label htmlFor="name">Name:</label>
-              <input type="text" className="form-control" id="name" onChange={(e) => setPword(e.target.value)} name="name" />
-            </div>
-            <br/>
-            <button type="button" onClick={onSignUp} className="btn btn-primary sbutton1">Sign Up</button>           
+            <button type="button" onClick={(event) => onSignUp(event, fName, lName, email, username, pword, setGoToHome)} className="btn btn-primary sbutton1">Sign Up</button>           
           </form>
         </div>
       </div>

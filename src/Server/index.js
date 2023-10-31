@@ -4,6 +4,7 @@
 const mongoose = require('mongoose');
 const MayorSchema = require('./Schema/MayorSchema.jsx');
 const Cityofficials = require('./Schema/CityofficialsSchema.jsx');
+const User = require('./Schema/UserSchema');
 
 const express = require("express");
 const cors = require('cors');
@@ -12,7 +13,6 @@ const app = express();
 const PORT = 9000;
 require("dotenv").config();
 
-const PORT = 9000;
 app.use(express.json());
 app.use(cors());
 app.use((req, res, next) => {
@@ -29,7 +29,32 @@ app.get("/", (req, res) => {
   });
 // Add Api calls here
 //app.post('/createCompany', createCompany);
-
+app.post("/createUser", (req, res) => {
+    console.log(`createUser: First Name: ${req.body.firstName}`)
+    console.log(`createUser: Last Name: ${req.body.lastName}`)
+    console.log(`createUser: EmailId: ${req.body.emailId}`)
+    console.log(`createUser: Username: ${req.body.username}`)
+    console.log(`createUser: pword: ${req.body.password}`)
+    try {
+        //Check if username already exists in database
+        User.exists({username: req.body.username}).then(result => {
+            if(Object.is(result, null)) {
+                const user = new User(req.body);
+                user.save()
+                console.log(`User created! ${user}`)
+                res.send(user)
+            }
+            else {
+                console.log("Username already exists")
+                res.status(500).send("Username already exists")
+            }
+        })
+    }
+    catch (err) {
+        console.log("CreateUser: Error")
+        res.status(500).send(err);
+    }
+});
 //app.listen(PORT, () => {
 //    console.log(`Server started at ${PORT}`);
 //})
@@ -39,11 +64,9 @@ const database = mongoose.connection;
 
 
 database.on('error', (error) => console.log(error));
-database.once('connected', () => console.log("Databse connected"));
+database.once('connected', () => console.log("Database connected"));
 
-app.listen(9000, () => {
-    console.log(`Server started at ${9000}`);
-})
+
 app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-  });
+    console.log(`Server started at ${PORT}`);
+})
