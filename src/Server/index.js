@@ -8,6 +8,7 @@ const User = require('./Schema/UserSchema');
 
 const express = require("express");
 const cors = require('cors');
+const Candidate = require('./Schema/CandidateSchema.jsx');
 
 const app = express();
 const PORT = 9000;
@@ -37,8 +38,8 @@ app.post("/createUser", (req, res) => {
     console.log(`createUser: pword: ${req.body.password}`)
     try {
         //Check if username already exists in database
-        User.exists({username: req.body.username}).then(result => {
-            if(Object.is(result, null)) {
+        User.exists({ username: req.body.username }).then(result => {
+            if (Object.is(result, null)) {
                 const user = new User(req.body);
                 user.save()
                 console.log(`User created! ${user}`)
@@ -53,6 +54,40 @@ app.post("/createUser", (req, res) => {
     catch (err) {
         console.log("CreateUser: Error")
         res.status(500).send(err);
+    }
+});
+
+app.post('/registerCandidate', async (req, res) => {
+    try {
+        const candidate = new Candidate(req.body);
+        const existsCandidate = await Candidate.findOne({ userID: candidate.userID });
+        if (existsCandidate) {
+            console.log("Candidate exists");
+            res.status(510).send("Candidate exists");
+        }
+        else {
+            await candidate.save(req.body);
+            console.log(candidate);
+            res.send(candidate);
+        }
+    }
+    catch (error) {
+        console.log("Details are ", req.body);
+        console.log("Error is", error)
+        res.status(500).send(error);
+    }
+})
+
+app.get("/getUser", async (req, res) => {
+    //console.log(" username and password to look for are ", req.query.username, req.query.password);
+    const username = req.query.username;
+    const password = req.query.password;
+    try {
+        const user = await User.findOne({ username, password });
+        res.send(user);
+    }
+    catch (error) {
+        res.status(500).send(error);
     }
 });
 //app.listen(PORT, () => {

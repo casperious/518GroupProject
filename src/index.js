@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import {createBrowserRouter, Route, RouterProvider, createRoutesFromElements } from 'react-router-dom';
+import { createBrowserRouter, Route, RouterProvider, createRoutesFromElements } from 'react-router-dom';
 import './index.css';
 import App from './App';
 import NavBar from './Components/NavBar';
@@ -11,17 +11,21 @@ import AddFeedback from './Components/AddFeedback';
 import AddComplaint from './Components/AddComplaint';
 import ViewLaws from './Components/ViewLaws';
 import SignUpUser from './Components/SignUpUser';
+import LoginPage from './Components/Login';
+import RegisterCandidate from './Components/RegisterCandidate';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
       <Route path='/' element={<App />} />
-      <Route path='/signUpCompany' element={<SignUpCompany/>} />
-      <Route path='/voteMayor' element={<VoteMayor/>} />
-      <Route path='/sendFeedback' element={<AddFeedback/>} />
-      <Route path='/sendComplaint' element={<AddComplaint/>} />
-      <Route path='/viewLaws' element={<ViewLaws/>} />
-      <Route path='/signup' element={<SignUpUser/>}></Route>
+      <Route path='/signUpCompany' element={<SignUpCompany />} />
+      <Route path='/voteMayor' element={<VoteMayor />} />
+      <Route path='/sendFeedback' element={<AddFeedback />} />
+      <Route path='/sendComplaint' element={<AddComplaint />} />
+      <Route path='/viewLaws' element={<ViewLaws />} />
+      <Route path='/signup' element={<SignUpUser />}></Route>
+      <Route path='/Login' element={<LoginPage />}></Route>
+      <Route path='/RegisterCandidate' element={<RegisterCandidate />}></Route>
     </>
   )
 )
@@ -29,7 +33,7 @@ const router = createBrowserRouter(
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <NavBar/>
+    <NavBar />
     <RouterProvider router={router}>
       <App />
     </RouterProvider>
