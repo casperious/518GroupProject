@@ -3,6 +3,7 @@ import { Button, Alert, } from "react-bootstrap";
 import '../App.css';
 //import backgroundImage from './background.jpg';
 import axios from 'axios';
+import { useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
     const [username, setUsername] = useState('');
@@ -18,6 +19,7 @@ export default function LoginPage() {
         setPassword(e.target.value);
     };
 
+    const navigate = useNavigate();
     //handling submit button clicks
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -25,7 +27,7 @@ export default function LoginPage() {
             errorMessage();
         }
         else {
-            console.log("Trying to get user");
+            //console.log("Trying to get user");
             axios.get('http://localhost:9000/getUser', {
                 params: {
                     username: username,
@@ -33,13 +35,16 @@ export default function LoginPage() {
                 }
             })
                 .then((res) => {
-                    if (res.data)
+                    if (res.data) {
                         successMessage();
+                        localStorage.setItem("user_id", res.data._id);
+                        navigate('/')
+                    }
                     else
                         alert("Wrong credentials. Login failed");
                 })
                 .catch((err) => alert("Error in login"));
-            console.log([username, password]);
+            //console.log([username, password]);
         }
     };
 

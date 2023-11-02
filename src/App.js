@@ -9,6 +9,8 @@ import SignUpUser from './Components/SignUpUser';
 
 function App() {
   const navigate = useNavigate()
+  const user_id = localStorage.getItem("user_id");
+  // Welcome {user_id}
   return (
     <Routes>
       <Route path='/' element={
