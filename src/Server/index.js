@@ -57,7 +57,7 @@ app.post("/createUser", (req, res) => {
 });
 
 app.get("/getUser", async (req, res) => {
-    console.log(" username and password to look for are ", req.query.username, req.query.password);
+    //console.log(" username and password to look for are ", req.query.username, req.query.password);
     const username = req.query.username;
     const password = req.query.password;
     try {
