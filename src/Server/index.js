@@ -26,7 +26,7 @@ app.use((req, res, next) => {
 
 app.get("/", (req, res) => {
     res.status(200).send("API is live !");
-  });
+});
 // Add Api calls here
 //app.post('/createCompany', createCompany);
 app.post("/createUser", (req, res) => {
@@ -68,5 +68,5 @@ database.once('connected', () => console.log("Database connected"));
 
 
 app.listen(PORT, () => {
-    console.log(`Server started at ${PORT}`);
-})
+    console.log(`Server is running on http://localhost:${PORT}`);
+});
