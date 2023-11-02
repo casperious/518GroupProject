@@ -1,9 +1,11 @@
 import './App.css';
+import logo from './logo.svg'
 import { Routes, Route, useLocation, BrowserRouter, Navigate, useNavigate } from 'react-router-dom';
 import SignUpCompany from './Components/SignUpCompany'
 import Home from './Components/Home'
 import LoginPage from './Components/Login';
 import MayorDepartments from './Components/MayorDepartments';
+import SignUpUser from './Components/SignUpUser';
 
 function App() {
   const navigate = useNavigate()
@@ -37,11 +39,6 @@ function App() {
     </Routes>
   );
 
-
-function App() {
-  return <div>
-    <h1>Hello World</h1>
-  </div>;
 }
 
 export default App;
