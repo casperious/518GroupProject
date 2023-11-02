@@ -6,6 +6,7 @@ import Home from './Components/Home'
 import LoginPage from './Components/Login';
 import MayorDepartments from './Components/MayorDepartments';
 import SignUpUser from './Components/SignUpUser';
+import RegisterCandidate from './Components/RegisterCandidate';
 
 function App() {
   const navigate = useNavigate()
@@ -38,6 +39,7 @@ function App() {
       <Route path='Home' element={<Home />} />
       <Route path='/Login' element={<LoginPage />}></Route>
       <Route path='/MayorDepartments' element={<MayorDepartments />}></Route>
+      <Route path='/RegisterCandidate' element={<RegisterCandidate />}></Route>
     </Routes>
   );
 

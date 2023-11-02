@@ -7,14 +7,25 @@ function VoteMayor(props) {
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [voted, setVoted] = useState(null);
 
+  const [userID, setUserID] = useState([]);
+  const [yesCount, setYesCount] = useState([]);
+
   const user_id = localStorage.getItem("user_id");
   useEffect(() => {
-    // axios.get('http://localhost:9000/getCandidates')
-    //           .then((res) => setCandidates(res.data))
-    //         .catch((err) => alert('Error in Fetching Candidaes'))
-    // axios.get('http://localhost:9000/getVoted', {"id":id})
-    //   .then(((res) => setVoted(res.data)))
-    //   .catch((err) => alert('Error in Fetching Votes'))
+    /*axios.get('http://localhost:9000/getMayorVotes')
+      .then((res) => {
+        if(res.data){
+        setCandidates(res.data.candidates);
+        setUserID(res.data.userID);
+        setYesCount(res.data.yesCount);
+        }
+        else
+        {
+          alert("Fetching mayorVotes table failed");
+        }
+      })
+      .catch((err) => alert('Error in Fetching Candidates'))
+    */
     setCandidates([{ "name": 'A', "id": 1 }, { "name": 'B', "id": 2 }, { "name": 'C', "id": 3 }, { "name": 'D', "id": 4 }]);
   }, []);
 
@@ -33,9 +44,16 @@ function VoteMayor(props) {
     } else {
       alert(`You voted for Mayor : ${getCandidateName(selectedCandidate)}`);
       setVoted({ "id": user_id, "vote": selectedCandidate })
-      // axios.get('http://localhost:9000/voteMayor', {"id":id,"vote":selectedMayor})
-      // .then(((res) => setVoted(res.data)))
-      // .catch((err) => alert('Error in Fetching Votes'))
+      /*let votes = [...yesCount];
+      let vote = votes[selectedCandidate];
+      vote += 1;
+      votes[selectedCandidate] = vote;
+      setYesCount(votes);
+      axios.post('https://localhost:9000/voteMayor', {
+        "userID": [...userId, user_id],
+        "candidateID": candidates,
+        "yesCount": yesCount,
+      })*/
     }
   };
 

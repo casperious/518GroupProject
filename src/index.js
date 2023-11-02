@@ -12,6 +12,7 @@ import AddComplaint from './Components/AddComplaint';
 import ViewLaws from './Components/ViewLaws';
 import SignUpUser from './Components/SignUpUser';
 import LoginPage from './Components/Login';
+import RegisterCandidate from './Components/RegisterCandidate';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -24,6 +25,7 @@ const router = createBrowserRouter(
       <Route path='/viewLaws' element={<ViewLaws />} />
       <Route path='/signup' element={<SignUpUser />}></Route>
       <Route path='/Login' element={<LoginPage />}></Route>
+      <Route path='/RegisterCandidate' element={<RegisterCandidate />}></Route>
     </>
   )
 )
