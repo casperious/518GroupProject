@@ -14,14 +14,14 @@ function VoteMayor(props) {
     // axios.get('http://localhost:9000/getVoted', {"id":id})
     //   .then(((res) => setVoted(res.data)))
     //   .catch((err) => alert('Error in Fetching Votes'))
-    setMayors([{"name": 'A', "id": 1}, {"name": 'B', "id": 2}, {"name": 'C', "id": 3}, {"name": 'D', "id": 4}]);
+    setMayors([{ "name": 'A', "id": 1 }, { "name": 'B', "id": 2 }, { "name": 'C', "id": 3 }, { "name": 'D', "id": 4 }]);
   }, []);
 
   const getMayorName = (id) => {
     const mayor = mayors.find((mayor) => mayor.id == id);
     return mayor ? mayor.name : 'Mayor Name Not Found';
   }
-  
+
   const handleRadioChange = (event) => {
     setSelectedMayor(event.target.value);
   };
@@ -31,7 +31,7 @@ function VoteMayor(props) {
       alert('No Mayor Selected');
     } else {
       alert(`You voted for Mayor : ${getMayorName(selectedMayor)}`);
-      setVoted({"id":323442,"vote":selectedMayor})
+      setVoted({ "id": 323442, "vote": selectedMayor })
       // axios.get('http://localhost:9000/voteMayor', {"id":id,"vote":selectedMayor})
       // .then(((res) => setVoted(res.data)))
       // .catch((err) => alert('Error in Fetching Votes'))
