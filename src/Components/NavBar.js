@@ -1,13 +1,14 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/js/bootstrap.bundle';
+import '../index.css'
 
 
 function NavBar() {
   return (
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <nav class="navbar navbar-expand-lg light-pink-bg ">
       <div class="container-fluid">
-        <a class="navbar-brand" href="/">City of Albany</a>
+        <a class="navbar-brand" href="/">My App</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -22,6 +23,19 @@ function NavBar() {
                 <li><a class="dropdown-item" href="/viewLaws">Vote Laws</a></li>
                 <li><a class="dropdown-item" href="/sendFeedback">Feedback</a></li>
                 <li><a class="dropdown-item" href="/sendComplaint">Complaint</a></li>
+              </ul>
+            </li>
+          </ul>
+          <ul class="navbar-nav   mb-lg-0">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="true">
+                Departments
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="/Department">Waste Management</a></li>
+                <li><a class="dropdown-item" href="/Department">ABC Management</a></li>
+                <li><a class="dropdown-item" href="/Department">xyz Management</a></li>
+                <li><a class="dropdown-item" href="/Department">123 Management</a></li>
               </ul>
             </li>
           </ul>

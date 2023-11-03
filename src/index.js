@@ -13,11 +13,20 @@ import ViewLaws from './Components/ViewLaws';
 import SignUpUser from './Components/SignUpUser';
 import LoginPage from './Components/Login';
 import RegisterCandidate from './Components/RegisterCandidate';
+import Home from './Components/Home';
+import Department from './Components/Departments';
+import ContractRequest from './Components/contractrequest';
+import ViewMore from './Components/viewmore';
+import ApplyContract from './Components/ApplyContract';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
-      <Route path='/' element={<App />} />
+      <Route path='/' element={<Home />} />
+      <Route path='/contractrequest' element={<ContractRequest />} />
+      <Route path='/ApplyContract' element={<ApplyContract />} />
+      <Route path='/viewmore' element={<ViewMore />} />
+      <Route path='/Department' element = {<Department />} />
       <Route path='/signUpCompany' element={<SignUpCompany />} />
       <Route path='/voteMayor' element={<VoteMayor />} />
       <Route path='/sendFeedback' element={<AddFeedback />} />
@@ -33,7 +42,7 @@ const router = createBrowserRouter(
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <NavBar />
+    
     <RouterProvider router={router}>
       <App />
     </RouterProvider>
