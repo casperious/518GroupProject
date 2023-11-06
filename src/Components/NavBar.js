@@ -23,6 +23,7 @@ function NavBar() {
                 <li><a class="dropdown-item" href="/viewLaws">Vote Laws</a></li>
                 <li><a class="dropdown-item" href="/sendFeedback">Feedback</a></li>
                 <li><a class="dropdown-item" href="/sendComplaint">Complaint</a></li>
+                <li><a class="dropdown-item" href="/Cityofficialsdepartments">Cityofficials'departments</a></li>
               </ul>
             </li>
           </ul>
