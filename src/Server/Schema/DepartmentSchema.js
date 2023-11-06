@@ -6,6 +6,7 @@ const DepartmentSchema = new mongoose.Schema({
     cityOfficialID: mongoose.Schema.Types.ObjectId,
     budget: Number,
     rules: String,
+    employees: [mongoose.Schema.Types.ObjectId],
 });
 
 const Department = mongoose.model("Department", DepartmentSchema);
