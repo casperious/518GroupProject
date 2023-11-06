@@ -1,5 +1,7 @@
 // EmployeeForm.js
 import React, { useState } from "react";
+import NavBar from "./NavBar";
+import Footer from "./footer";
 
 function EmployeeForm({ onSubmit }) {
   const [employeeName, setEmployeeName] = useState("");
@@ -14,7 +16,9 @@ function EmployeeForm({ onSubmit }) {
   };
 
   return (
-    <div className="container">
+    <div>
+        <NavBar />
+        <div className="container">
       <div className="row justify-content-center align-items-center lcontainer">
       <form className="col-6">
       <h2>Hiring New Employee</h2>
@@ -45,6 +49,8 @@ function EmployeeForm({ onSubmit }) {
             </a>
       </form>
       </div>
+      </div>
+      <Footer />
     </div>
   );
 }

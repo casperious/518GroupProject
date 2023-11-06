@@ -4,6 +4,8 @@ import '../App.css';
 //import backgroundImage from './background.jpg';
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
+import NavBar from "./NavBar";
+import Footer from "./footer";
 
 export default function LoginPage() {
     const [username, setUsername] = useState('');
@@ -59,6 +61,8 @@ export default function LoginPage() {
     };
 
     return (
+        <div>
+        <NavBar />
         <div className="container">
             <div className="row justify-content-center align-items-center scontainer">
                 <form className="col-6">
@@ -76,6 +80,8 @@ export default function LoginPage() {
                     <button type="button" onClick={handleSubmit} className="btn btn-primary sbutton1">Log In</button>
                 </form>
             </div>
+            </div>
+             <Footer />
         </div>
     )
 }

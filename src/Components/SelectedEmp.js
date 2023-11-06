@@ -1,9 +1,13 @@
 
 import React from "react";
+import NavBar from "./NavBar";
+import Footer from "./footer";
 
 function SubmissionPage() {
     return (
-        <div className="container">
+      <div>
+      <NavBar />
+      <div className="container">
           <div className="row justify-content-center align-items-center lcontainer">
             <form className="col-6">
               <h2>Hired Employee information</h2>
@@ -29,6 +33,8 @@ function SubmissionPage() {
               </table>
             </form>
           </div>
+          </div>
+          <Footer />
         </div>
       );
     }

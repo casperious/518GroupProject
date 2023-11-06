@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import { useState, useEffect } from "react";
 import 'bootstrap/dist/css/bootstrap.css';
 import axios from "axios";
+import NavBar from "./NavBar";
+import Footer from "./footer";
 
 function ViewLaws(props) {
 
@@ -37,7 +39,9 @@ function ViewLaws(props) {
   }
 
   return (
-      <div className="container">
+    <div>
+    <NavBar />
+    <div className="container">
         <div className="row justify-content-center align-items-center lcontainer">
           <form className="col-6">
 			      <h2 id="ttle">Laws</h2> <br/>
@@ -53,6 +57,8 @@ function ViewLaws(props) {
             <br/>
           </form>
         </div>
+        </div>
+        <Footer />
       </div>
     );
 }

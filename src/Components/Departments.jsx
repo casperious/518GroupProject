@@ -2,8 +2,9 @@ import React, {  useState } from "react";
 import 'bootstrap/dist/css/bootstrap.css';
 
 import NavBar from './NavBar';
-import Footer from './footer';
+
 import { Link } from "react-router-dom";
+import Footer from "./footer";
 
 function Department()
 {
@@ -165,11 +166,12 @@ function Department()
                 </div>
             
             
-                <Footer/>
+                
             
 
             
             </div>
+            <Footer />
         </div>
     );
 

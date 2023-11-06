@@ -2,6 +2,7 @@ import React from 'react';
 import 'bootstrap/dist/css/bootstrap.css'; // Import Bootstrap CSS
 import '../index.css';
 import NavBar from './NavBar';
+import Footer from './footer';
 
 function ViewMore() {
     return (
@@ -29,6 +30,7 @@ function ViewMore() {
                         </div>
                     </div>
                 </div>
+                <Footer />
         </div>
     );
 }
