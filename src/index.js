@@ -17,7 +17,6 @@ import Cityofficialsdepartments from './Components/Cityofficialsdepartments'
 import Cityemp from './Components/Cityemp'
 import SelectedEmp from './Components/SelectedEmp'
 
-
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
@@ -33,8 +32,6 @@ const router = createBrowserRouter(
       <Route path='/signup' element={<SignUpUser />}></Route>
       <Route path='/Login' element={<LoginPage />}></Route>
       <Route path='/RegisterCandidate' element={<RegisterCandidate />}></Route>
-      
-      
     </>
   )
 )
