@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import { useState, useEffect } from "react";
 import 'bootstrap/dist/css/bootstrap.css';
 import axios from "axios";
+import NavBar from "./NavBar";
+import Footer from "./footer";
 
 function AddFeedback(props) {
 
@@ -48,7 +50,10 @@ function AddFeedback(props) {
   }
 
   return (
-      <div className="container">
+      
+      <div>
+        <NavBar />
+        <div className="container">
         <div className="row justify-content-center align-items-center lcontainer">
           <form className="col-6">
 			      <h2 id="ttle">Feedback</h2> <br/>
@@ -73,6 +78,8 @@ function AddFeedback(props) {
             <button type="button" onClick={onClickHandler} className="btn btn-primary">Send Feedback</button>
           </form>
         </div>
+        </div>
+        <Footer />
       </div>
     );
 }

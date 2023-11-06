@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import 'bootstrap/dist/css/bootstrap.css';
 import axios from "axios";
+import NavBar from "./NavBar";
+import Footer from "./footer";
 
 function VoteMayor(props) {
   const [candidates, setCandidates] = useState([]);
@@ -58,7 +60,9 @@ function VoteMayor(props) {
   };
 
   return (
-    <div className="container">
+    <div>
+        <NavBar />
+        <div className="container">
       <div className="row justify-content-center align-items-center lcontainer team-list">
         <h4 style={{ color: 'green' }}>Vote Mayor</h4> <br /> <br />
         {voted != null ? (
@@ -97,6 +101,8 @@ function VoteMayor(props) {
           </>
         )}
       </div>
+      </div>
+      <Footer />
     </div>
   );
 }

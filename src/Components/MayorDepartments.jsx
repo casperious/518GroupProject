@@ -3,6 +3,8 @@ import { Button, Alert, } from "react-bootstrap";
 import '../App.css';
 //import backgroundImage from './background.jpg';
 import axios from 'axios';
+import NavBar from "./NavBar";
+import Footer from "./footer";
 
 export default function MayorDepartments() {
     const [departments, setDepartments] = useState([]);
@@ -87,6 +89,7 @@ export default function MayorDepartments() {
 
     return (
         <div>
+            <NavBar />
             <div className="container" style={{
                 position: 'absolute', left: '77%', top: '40%',
                 transform: 'translate(-50%, -50%)',
@@ -116,6 +119,7 @@ export default function MayorDepartments() {
 
 
             </div>
+            <Footer />
         </div>)
 
 

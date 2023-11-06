@@ -21,6 +21,7 @@ import ApplyContract from './Components/ApplyContract';
 import Cityofficialsdepartments from './Components/Cityofficialsdepartments'
 import Cityemp from './Components/Cityemp'
 import SelectedEmp from './Components/SelectedEmp'
+import Footer from './Components/footer';
 
 
 const router = createBrowserRouter(
@@ -51,7 +52,8 @@ root.render(
   <React.StrictMode>
     
     <RouterProvider router={router}>
-      <App />
+    
+    
     </RouterProvider>
   </React.StrictMode>
 );

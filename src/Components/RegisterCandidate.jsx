@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import { useState, useEffect } from "react";
 import 'bootstrap/dist/css/bootstrap.css';
 import axios from "axios";
+import NavBar from "./NavBar";
+import Footer from "./footer";
 
 function RegisterCandidate(props) {
 
@@ -35,6 +37,8 @@ function RegisterCandidate(props) {
         }
     };
     return (
+        <div>
+        <NavBar />
         <div className="container">
             <div className="row justify-content-center align-items-center lcontainer">
                 <form className="col-6">
@@ -53,6 +57,8 @@ function RegisterCandidate(props) {
                     <button type="button" onClick={handleSubmit} className="btn btn-primary">Send Feedback</button>
                 </form>
             </div>
+            </div>
+            <Footer />
         </div>
     );
 }

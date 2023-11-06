@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import 'bootstrap/dist/css/bootstrap.css';
+import NavBar from "./NavBar";
+import Footer from "./footer";
 
 function CityDept() {
   const [cityOfficial, setCityOfficial] = useState(0);
@@ -50,7 +52,9 @@ function CityDept() {
   }
 
   return (
-    <div className="container">
+    <div>
+        <NavBar />
+        <div className="container">
       <div className="row justify-content-center align-items-center lcontainer">
         <form className="col-6">
           <h2 id="title">Departments under City Officials</h2>
@@ -98,6 +102,8 @@ function CityDept() {
             </a>
         </form>
       </div>
+      </div>
+      <Footer />
     </div>
   );
 }

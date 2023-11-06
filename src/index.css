@@ -23,10 +23,11 @@ code {
   border-radius: 15px; 
 }
 .light-pink-bg {
-  background-color: #f9d5e7; 
+  background-color: #800080; 
+  
 }
 .card-title{
-  background-color: #f3e5f5;
+  background-color:#dda0dd;
   padding: 10px;
   border-radius: 15px;
   font-size: 20px;

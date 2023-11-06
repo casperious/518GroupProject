@@ -4,6 +4,8 @@ import 'bootstrap/dist/css/bootstrap.css';
 import axios from "axios";
 import '../static/companySignUp.css'
 import { useNavigate } from 'react-router-dom';
+import NavBar from "./NavBar";
+import Footer from "./footer";
 
 const onSignUp = (event, fName, lName, email, username, pword, setGoToHome) => {
     event.preventDefault();
@@ -43,7 +45,9 @@ const SignUpUser = () => {
       });
 
     return (
-      <div className="container">
+      <div>
+        <NavBar />
+        <div className="container">
         <div className="row justify-content-center align-items-center scontainer">
           <form className="col-6">
 			      <h2 id="ttle">User SignUp</h2> <br/>
@@ -75,6 +79,8 @@ const SignUpUser = () => {
             <button type="button" onClick={(event) => onSignUp(event, fName, lName, email, username, pword, setGoToHome)} className="btn btn-primary sbutton1">Sign Up</button>           
           </form>
         </div>
+        </div>
+        <Footer />
       </div>
     );
   }
