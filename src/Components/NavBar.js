@@ -7,7 +7,7 @@ function NavBar() {
   return (
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
       <div class="container-fluid">
-        <a class="navbar-brand" href="/">My App</a>
+        <a class="navbar-brand" href="/">City of Albany</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -22,6 +22,7 @@ function NavBar() {
                 <li><a class="dropdown-item" href="/viewLaws">Vote Laws</a></li>
                 <li><a class="dropdown-item" href="/sendFeedback">Feedback</a></li>
                 <li><a class="dropdown-item" href="/sendComplaint">Complaint</a></li>
+                <li><a class="dropdown-item" href="/Cityofficialsdepartments">Cityofficials'departments</a></li>
               </ul>
             </li>
           </ul>

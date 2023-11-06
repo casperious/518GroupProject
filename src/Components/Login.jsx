@@ -3,6 +3,7 @@ import { Button, Alert, } from "react-bootstrap";
 import '../App.css';
 //import backgroundImage from './background.jpg';
 import axios from 'axios';
+import { useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
     const [username, setUsername] = useState('');
@@ -18,6 +19,7 @@ export default function LoginPage() {
         setPassword(e.target.value);
     };
 
+    const navigate = useNavigate();
     //handling submit button clicks
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -25,7 +27,7 @@ export default function LoginPage() {
             errorMessage();
         }
         else {
-            console.log("Trying to get user");
+            //console.log("Trying to get user");
             axios.get('http://localhost:9000/getUser', {
                 params: {
                     username: username,
@@ -33,13 +35,16 @@ export default function LoginPage() {
                 }
             })
                 .then((res) => {
-                    if (res.data)
+                    if (res.data) {
                         successMessage();
+                        localStorage.setItem("user_id", res.data._id);
+                        navigate('/')
+                    }
                     else
                         alert("Wrong credentials. Login failed");
                 })
                 .catch((err) => alert("Error in login"));
-            console.log([username, password]);
+            //console.log([username, password]);
         }
     };
 
@@ -54,56 +59,23 @@ export default function LoginPage() {
     };
 
     return (
-        <div>
-            <div className="Title" style={{
-                position: 'absolute', left: '50%', top: '40%',
-                transform: 'translate(-50%, -50%)',
-            }}>
-                <h1>Login Page</h1>
-                <br></br>
+        <div className="container">
+            <div className="row justify-content-center align-items-center scontainer">
+                <form className="col-6">
+                    <h2 id="ttle">User Login</h2> <br />
+                    <div className="form-group">
+                        <label htmlFor="uname">Username:</label>
+                        <input type="text" className="form-control" id="uname" onChange={(e) => setUsername(e.target.value)} name="username" />
+                    </div>
+                    <br />
+                    <div className="form-group">
+                        <label htmlFor="pword">Password:</label>
+                        <input type="password" className="form-control" id="pword" onChange={(e) => setPassword(e.target.value)} name="password" />
+                    </div>
+                    <br />
+                    <button type="button" onClick={handleSubmit} className="btn btn-primary sbutton1">Log In</button>
+                </form>
             </div>
-            <br />
-            <div style={{
-                position: 'absolute', left: '53%', top: '50%',
-                transform: 'translate(-50%, -50%)',
-            }}>
-                <h2 className="Data" >
-                    <form>
-                        <h3>
-
-                            <span class="input-group-text" id="inputGroup" style={{
-                                position: 'absolute', left: '-23%', top: '21%',
-                                transform: 'translate(-50%, -50%)'
-                            }}>Username</span>
-                            <input type="text" class="form-control" aria-label="Example input" aria-describedby="inputGroup" onChange={handleUsername}></input>
-                            <br />
-                        </h3>
-                        <h3>
-                            <span class="input-group-text" id="inputGroup" style={{
-                                position: 'absolute', left: '-22%', top: '67%',
-                                transform: 'translate(-50%, -50%)'
-                            }}>Password</span>
-                            <input type="password" class="form-control" aria-label="Example input" aria-describedby="inputGroup" onChange={handlePassword}></input>
-                            <br />
-
-                        </h3>
-                        <Button onClick={handleSubmit} style={{
-                            position: 'absolute', left: '25%', top: '120%',
-                            transform: 'translate(-50%, -50%)'
-                        }}>Login</Button>
-                    </form>
-                </h2>
-                <span class="input-group-text" id="inputGroup" style={{
-                    position: 'absolute', left: '-23%', top: '190%',
-                    transform: 'translate(-50%, -50%)'
-                }}>Need an account?</span>
-                <a href="/Signup" style={{
-                    position: 'absolute', left: '30%', top: '190%',
-                    transform: 'translate(-50%, -50%)'
-                }}>Signup</a>
-
-            </div>
-
         </div>
     )
 }

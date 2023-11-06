@@ -1,12 +1,17 @@
 import './App.css';
+import logo from './logo.svg'
 import { Routes, Route, useLocation, BrowserRouter, Navigate, useNavigate } from 'react-router-dom';
 import SignUpCompany from './Components/SignUpCompany'
 import Home from './Components/Home'
 import LoginPage from './Components/Login';
 import MayorDepartments from './Components/MayorDepartments';
+import SignUpUser from './Components/SignUpUser';
+import RegisterCandidate from './Components/RegisterCandidate';
 
 function App() {
   const navigate = useNavigate()
+  const user_id = localStorage.getItem("user_id");
+  // Welcome {user_id}
   return (
     <Routes>
       <Route path='/' element={
@@ -34,14 +39,10 @@ function App() {
       <Route path='Home' element={<Home />} />
       <Route path='/Login' element={<LoginPage />}></Route>
       <Route path='/MayorDepartments' element={<MayorDepartments />}></Route>
+      <Route path='/RegisterCandidate' element={<RegisterCandidate />}></Route>
     </Routes>
   );
 
-
-function App() {
-  return <div>
-    <h1>Hello World</h1>
-  </div>;
 }
 
 export default App;
