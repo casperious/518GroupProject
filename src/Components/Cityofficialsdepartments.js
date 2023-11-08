@@ -1,111 +1,84 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
+import axios from 'axios';
 import NavBar from "./NavBar";
 import Footer from "./footer";
 
-function CityDept() {
-  const [cityOfficial, setCityOfficial] = useState(0);
-  const [dept, setDept] = useState("");
-  const [depts, setDepts] = useState({
-    1: [], 
-    2: [], 
-    3: [], 
-    4: [], 
+export default function CityDept({ setActive }) {
+  const [cityValues, setCityValues] = useState({
+    department: '',
+    employee: '', // Default value
+    job: '',
   });
 
-  useEffect(() => {
-    setDepts({
-      1: [
-        { _id: 1, name: "Department 1" },
-        { _id: 2, name: "Department 2" },
-      ],
-      2: [
-        { _id: 3, name: "Department 1" },
-        { _id: 4, name: "Department 2" },
-      ],
-      3: [
-        { _id: 5, name: "Department 1" },
-        { _id: 6, name: "Department 2" },
-      ],
-      4: [
-        { _id: 7, name: "Department 1" },
-        { _id: 8, name: "Department 2" },
-      ],
-    });
-  }, []);
+  const handleChange = (event) => {
+    setCityValues({ ...cityValues, [event.target.name]: event.target.value });
+  };
 
-  const onClickHandler = (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
-    if (cityOfficial === 0) {
-      alert("Please select a City Official");
-      return;
-    }
-    if (dept.trim() === "") {
-      alert("Please select a department");
-      return;
-    }
-
-    setDept("");
-    setCityOfficial(0);
-    document.getElementById('dept').value = "";
-    document.getElementById('cityOfficial').value = 0;
-  }
+    // You can add your form submission logic here.
+  };
 
   return (
     <div>
-        <NavBar />
-        <div className="container">
-      <div className="row justify-content-center align-items-center lcontainer">
-        <form className="col-6">
-          <h2 id="title">Departments under City Officials</h2>
-          <div className="form-group">
-            <label htmlFor="cityOfficial">City Officials:</label>
-            <select
-              className="form-control"
-              name="cityOfficial"
-              id="cityOfficial"
-              value={cityOfficial}
-              onChange={(e) => setCityOfficial(parseInt(e.target.value))}
-            >
-              <option value={0}>Select a City Official</option>
-              {Object.keys(depts).map((officialKey) => (
-                <option key={officialKey} value={officialKey}>
-                  City Official {officialKey}
-                </option>
-              ))}
-            </select>
-          </div>
+      <NavBar />
+      <div className="container">
+        <div className="row justify-content-center align-items-center">
+          <div className="col-md-6">
+            <div className="card">
+              <div className="card-body">
+                <h2 className="card-title">Welcome Cityofficial 1</h2>
+                <form onSubmit={handleSubmit}>
+                  <div className="form-group">
+                    <label>Departments:</label>
+                    <select
+                      className="form-control"
+                      name="department"
+                      value={cityValues.department}
+                      onChange={handleChange}
+                    >
+                      <option value="Department 1">Department 1</option>
+                      <option value="Department 2">Department 2</option>
+                      <option value="Department 3">Department 3</option>
+                    </select>
+                  </div>
 
-          { cityOfficial !== 0 && (
-            <div className="form-group">
-              <label htmlFor="dept">List of departments:</label>
-              <select
-                className="form-control"
-                name="dept"
-                id="dept"
-                value={dept}
-                onChange={(e) => setDept(e.target.value)}
-              >
-                <option value="">Select a department</option>
-                {depts[cityOfficial].map((dept) => (
-                  <option key={dept._id} value={dept._id}>
-                    {dept.name}
-                  </option>
-                ))}
-              </select>
+                  <div className="form-group">
+                    <label>Employees</label>
+                    <select
+                      className="form-control"
+                      name="employee"
+                      value={cityValues.employee}
+                      onChange={handleChange}
+                    >
+                      <option value="employee1">Employee 1</option>
+                      <option value="employee2">Employee 2</option>
+                      <option value="employee3">Employee 3</option>
+                    </select>
+                  </div>
+
+                  <div className="form-group">
+                    <label>Job Description</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      name="job"
+                      value={cityValues.job}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <button type="submit" className="btn btn-primary btn-block">
+                    Submit
+                  </button>
+                </form>
+              </div>
             </div>
-          )}
-
-          <br />
-          <a href='/Employeeselection' className="login-link">
-              SignIn here
-            </a>
-        </form>
-      </div>
+          </div>
+        </div>
       </div>
       <Footer />
     </div>
   );
 }
-
-export default CityDept;
