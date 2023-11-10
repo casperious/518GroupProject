@@ -138,13 +138,25 @@ app.get('/getCityOfficials', async (req, res) => {
 app.post("/registerCityOfficial", async (req, res) => {
     try {
         const cityOfficial = new Cityofficials(req.body);
-        const existsOfficial = await Cityofficials.findOne({ userID: cityOfficial.userID });
+        const existsOfficial = await Cityofficials.findOne({ userId: cityOfficial.userId });
         if (existsOfficial) {
             console.log("City official exists");
             res.status(510).send("city official exists");
         }
         else {
             await cityOfficial.save(req.body);
+
+            try {
+                const filter = { _id: req.body.userId };
+                const updateDoc = {
+                    $set: { isCityOfficial: "Yes" }
+                };
+                const options = { upsert: true };
+                await User.updateOne(filter, updateDoc, options);
+            }
+            catch (error) {
+                console.log("Error in updating userid");
+            }
             console.log(cityOfficial);
             res.send(cityOfficial);
         }
@@ -168,6 +180,39 @@ app.post("/registerDepartment", async (req, res) => {
             await department.save(req.body);
             console.log(department);
             res.send(department);
+        }
+    }
+    catch (error) {
+        console.log("Details are ", req.body);
+        console.log("Error is", error)
+        res.status(500).send(error);
+    }
+})
+
+app.post("/registerMayor", async (req, res) => {
+    try {
+        const mayor = new Mayor(req.body);
+        const existsMayor = await Mayor.findOne({ userId: cityOfficial.userId });
+        if (existsMayor) {
+            console.log("Mayor exists");
+            res.status(510).send("Mayor exists");
+        }
+        else {
+            await mayor.save(req.body);
+
+            try {
+                const filter = { _id: req.body.userId };
+                const updateDoc = {
+                    $set: { isMayor: "Yes", isCityOfficial: "No" }
+                };
+                const options = { upsert: true };
+                await User.updateOne(filter, updateDoc, options);
+            }
+            catch (error) {
+                console.log("Error in updating userid");
+            }
+            console.log(mayor);
+            res.send(mayor);
         }
     }
     catch (error) {
