@@ -40,6 +40,15 @@ export default function LoginPage() {
                     if (res.data) {
                         successMessage();
                         localStorage.setItem("user_id", res.data._id);
+                        if (res.data.isMayor == "Yes") {
+                            localStorage.setItem("role", "Mayor");
+                        }
+                        else if (res.data.isCityOfficial == "Yes") {
+                            localStorage.setItem("role", "City Official");
+                        }
+                        else {
+                            localStorage.setItem("role", "Citizen");
+                        }
                         navigate('/')
                     }
                     else
@@ -62,26 +71,26 @@ export default function LoginPage() {
 
     return (
         <div>
-        <NavBar />
-        <div className="container">
-            <div className="row justify-content-center align-items-center scontainer">
-                <form className="col-6">
-                    <h2 id="ttle">User Login</h2> <br />
-                    <div className="form-group">
-                        <label htmlFor="uname">Username:</label>
-                        <input type="text" className="form-control" id="uname" onChange={(e) => setUsername(e.target.value)} name="username" />
-                    </div>
-                    <br />
-                    <div className="form-group">
-                        <label htmlFor="pword">Password:</label>
-                        <input type="password" className="form-control" id="pword" onChange={(e) => setPassword(e.target.value)} name="password" />
-                    </div>
-                    <br />
-                    <button type="button" onClick={handleSubmit} className="btn btn-primary sbutton1">Log In</button>
-                </form>
+            <NavBar />
+            <div className="container">
+                <div className="row justify-content-center align-items-center scontainer">
+                    <form className="col-6">
+                        <h2 id="ttle">User Login</h2> <br />
+                        <div className="form-group">
+                            <label htmlFor="uname">Username:</label>
+                            <input type="text" className="form-control" id="uname" onChange={(e) => setUsername(e.target.value)} name="username" />
+                        </div>
+                        <br />
+                        <div className="form-group">
+                            <label htmlFor="pword">Password:</label>
+                            <input type="password" className="form-control" id="pword" onChange={(e) => setPassword(e.target.value)} name="password" />
+                        </div>
+                        <br />
+                        <button type="button" onClick={handleSubmit} className="btn btn-primary sbutton1">Log In</button>
+                    </form>
+                </div>
             </div>
-            </div>
-             <Footer />
+            <Footer />
         </div>
     )
 }
