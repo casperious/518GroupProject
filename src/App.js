@@ -7,6 +7,8 @@ import LoginPage from './Components/Login';
 import MayorDepartments from './Components/MayorDepartments';
 import SignUpUser from './Components/SignUpUser';
 import RegisterCandidate from './Components/RegisterCandidate';
+import CreateDepartment from './Components/CreateDepartment';
+import CreateCityOfficial from './Components/CreateCityOfficial';
 
 function App() {
   const navigate = useNavigate()
@@ -40,6 +42,8 @@ function App() {
       <Route path='/Login' element={<LoginPage />}></Route>
       <Route path='/MayorDepartments' element={<MayorDepartments />}></Route>
       <Route path='/RegisterCandidate' element={<RegisterCandidate />}></Route>
+      <Route path='/CreateDepartment' element={<CreateDepartment />}></Route>
+      <Route path='/CreateCityOfficial' element={<CreateCityOfficial />}></Route>
     </Routes>
   );
 
