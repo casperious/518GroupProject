@@ -9,6 +9,7 @@ const User = require('./Schema/UserSchema');
 const express = require("express");
 const cors = require('cors');
 const Candidate = require('./Schema/CandidateSchema.jsx');
+const Department = require('./Schema/DepartmentSchema.js');
 
 const app = express();
 const PORT = 9000;
@@ -90,9 +91,92 @@ app.get("/getUser", async (req, res) => {
         res.status(500).send(error);
     }
 });
-//app.listen(PORT, () => {
-//    console.log(`Server started at ${PORT}`);
-//})
+
+app.get("/getUsers", async (req, res) => {
+    try {
+        const users = await User.find();
+        res.send(users);
+    }
+    catch (error) {
+        res.status(500).send(error);
+    }
+})
+
+app.get('/getDepartments', async (req, res) => {
+    try {
+        const depts = await Department.find();
+        res.send(depts);
+    }
+    catch (error) {
+        res.status(500).send(error);
+    }
+})
+
+app.post('/deleteDepartment', async (req, res) => {
+    console.log("deleting ", req.body.department_id);
+    try {
+        const result = await Department.findByIdAndDelete({ _id: req.body.department_id });
+        //console.log(result);
+        res.send(result);
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).send(error);
+    }
+})
+
+app.get('/getCityOfficials', async (req, res) => {
+    try {
+        const officials = await Cityofficials.find();
+        res.send(officials);
+    }
+    catch (error) {
+        res.status(500).send(error);
+    }
+})
+
+app.post("/registerCityOfficial", async (req, res) => {
+    try {
+        const cityOfficial = new Cityofficials(req.body);
+        const existsOfficial = await Cityofficials.findOne({ userID: cityOfficial.userID });
+        if (existsOfficial) {
+            console.log("City official exists");
+            res.status(510).send("city official exists");
+        }
+        else {
+            await cityOfficial.save(req.body);
+            console.log(cityOfficial);
+            res.send(cityOfficial);
+        }
+    }
+    catch (error) {
+        console.log("Details are ", req.body);
+        console.log("Error is", error)
+        res.status(500).send(error);
+    }
+})
+
+app.post("/registerDepartment", async (req, res) => {
+    try {
+        const department = new Department(req.body);
+        const existsDepartment = await Candidate.findOne({ name: department.name });
+        if (existsDepartment) {
+            console.log("Department exists");
+            res.status(510).send("Department exists");
+        }
+        else {
+            await department.save(req.body);
+            console.log(department);
+            res.send(department);
+        }
+    }
+    catch (error) {
+        console.log("Details are ", req.body);
+        console.log("Error is", error)
+        res.status(500).send(error);
+    }
+})
+
 const mongostring = "mongodb+srv://delegateAdmin:test12345@delegatecluster.rcuipff.mongodb.net/";
 mongoose.connect(mongostring);
 const database = mongoose.connection;

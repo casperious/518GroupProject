@@ -19,6 +19,9 @@ import ContractRequest from './Components/contractrequest';
 import ViewMore from './Components/viewmore';
 import ApplyContract from './Components/ApplyContract';
 import Cityofficialsdepartments from './Components/Cityofficialsdepartments'
+import MayorDepartments from './Components/MayorDepartments';
+import CreateDepartment from './Components/CreateDepartment';
+import CreateCityOfficial from './Components/CreateCityOfficial';
 import Footer from './Components/footer';
 
 
@@ -29,16 +32,19 @@ const router = createBrowserRouter(
       <Route path='/contractrequest' element={<ContractRequest />} />
       <Route path='/ApplyContract' element={<ApplyContract />} />
       <Route path='/viewmore' element={<ViewMore />} />
-      <Route path='/Department' element = {<Department />} />
+      <Route path='/Department' element={<Department />} />
       <Route path='/signUpCompany' element={<SignUpCompany />} />
       <Route path='/voteMayor' element={<VoteMayor />} />
       <Route path='/sendFeedback' element={<AddFeedback />} />
       <Route path='/sendComplaint' element={<AddComplaint />} />
       <Route path='/viewLaws' element={<ViewLaws />} />
-      <Route path='/Cityofficialsdepartments' element={<Cityofficialsdepartments/>} />
+      <Route path='/Cityofficialsdepartments' element={<Cityofficialsdepartments />} />
       <Route path='/signup' element={<SignUpUser />}></Route>
       <Route path='/Login' element={<LoginPage />}></Route>
       <Route path='/RegisterCandidate' element={<RegisterCandidate />}></Route>
+      <Route path='/MayorDepartments' element={<MayorDepartments />}></Route>
+      <Route path='/CreateDepartment' element={<CreateDepartment />}></Route>
+      <Route path='/CreateCityOfficial' element={<CreateCityOfficial />}></Route>
     </>
   )
 )
@@ -46,10 +52,10 @@ const router = createBrowserRouter(
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    
+
     <RouterProvider router={router}>
-    
-    
+
+
     </RouterProvider>
   </React.StrictMode>
 );
