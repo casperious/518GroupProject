@@ -46,6 +46,9 @@ export default function LoginPage() {
                         else if (res.data.isCityOfficial == "Yes") {
                             localStorage.setItem("role", "City Official");
                         }
+                        else if (res.data.isEmployee == "Yes") {
+                            localStorage.setItem("role", "Employee");
+                        }
                         else {
                             localStorage.setItem("role", "Citizen");
                         }
