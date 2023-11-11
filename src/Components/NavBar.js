@@ -1,10 +1,69 @@
-import React from 'react';
+import { React, useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/js/bootstrap.bundle';
 import '../index.css'
+import axios from 'axios'
 
+const getLoginOptions = () => {
+  //localStorage.getItem("user_id")
+  //if there is no current User logged in to the system, render in all the login/create account options
+  if(Object.is(localStorage.getItem("user_id"), null)) {
+    return (
+        <ul className="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/signup" style={{color : 'white'}}>SignUp</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/signUpCompany" style={{color : 'white'}}>Company SignUp</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/login" style={{color : 'white'}}>Login</a>
+          </li>
+        </ul>
+    );
+  }
+  // Else render the log out option
+  else {
+    return (
+      <ul className="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="/" style={{color : 'white'}} onClick={() => {
+            localStorage.removeItem("user_id");
+          }}>Logout</a>
+        </li>
+      </ul>
+    )
+  }
+}
 
 function NavBar() {
+  //PLEASE READ: This is super ugly. I don't know how to do this properly. When you select a Department from the department drop down
+  // You just go to /Department... I want to be able to do /Department/DepartmentID so that you load in details for the department
+  // Identified by DepartmentID. Need to find a way either using navigate() or some other method to append parameters to the departments
+  // Page so that we can load in the correct data.
+  // ...
+  // CURRENT WORK AROUND: Set the department in localStorage as "currentDepartment" and JSON.stringify() the department Object
+  // using the onClick() event in the <a></a> child element of the listItem <li></li> element. 
+  const [departments, setDepartments] = useState([]);
+  const [fetchDepartments, setFetchDepartments] = useState([true])
+
+  useEffect(() => {
+    if(fetchDepartments) {
+      //axios
+      axios.get("http://localhost:9000/getDepartments", { params: {}})
+        .then((res) => {
+          //something
+          setDepartments(res.data)
+          setFetchDepartments(false);
+        })
+        .catch((err) => {
+          console.log(`SERVER ERROR: ${err}`);
+          alert(`ERROR: ${err}`)
+        })
+    }
+  }, []);
+
+
   return (
     <nav className="navbar navbar-expand-lg light-pink-bg ">
       <div class="container-fluid">
@@ -33,24 +92,22 @@ function NavBar() {
                 Departments
               </a>
               <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="/Department">Waste Management</a></li>
-                <li><a class="dropdown-item" href="/Department">ABC Management</a></li>
-                <li><a class="dropdown-item" href="/Department">xyz Management</a></li>
-                <li><a class="dropdown-item" href="/Department">123 Management</a></li>
+                {
+                  departments.map((department) => {
+                    return <li><a class="dropdown-item" href="/Department" onClick={(event) => {
+                      localStorage.removeItem('currentDepartment')
+                      localStorage.setItem('currentDepartment', JSON.stringify(department))
+                    }}>{department.name}</a></li>;
+                  })
+                }
               </ul>
             </li>
           </ul>
-          <ul className="navbar-nav ml-auto">
-            <li class="nav-item">
-              <a class="nav-link" href="/signup" style={{color : 'white'}}>SignUp</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/signUpCompany" style={{color : 'white'}}>Company SignUp</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/login" style={{color : 'white'}}>LogIn</a>
-            </li>
-          </ul>
+          <>
+            {
+              getLoginOptions()
+            }
+          </>
         </div>
       </div>
     </nav>

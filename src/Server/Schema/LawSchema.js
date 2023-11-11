@@ -4,7 +4,7 @@ const LawSchema = new mongoose.Schema({
     passedBy: mongoose.Schema.Types.ObjectId,
     description: String,
     title: String,
-    state: { Active: "Active", Pending: "Pending", Rejected: "Rejected" },
+    state: String,
     departmentId: mongoose.Schema.Types.ObjectId,
 });
 

@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const MayorSchema = require('./Schema/MayorSchema.jsx');
 const Cityofficials = require('./Schema/CityofficialsSchema.jsx');
 const User = require('./Schema/UserSchema');
+const Law = require('./Schema/LawSchema.js')
 
 const express = require("express");
 const cors = require('cors');
@@ -30,6 +31,43 @@ app.get("/", (req, res) => {
     res.status(200).send("API is live !");
 });
 // Add Api calls here
+
+app.post("/createLaw", (req, res) => {
+    console.log(`createLaw: passedBy: ${req.body.passedBy}`)
+    console.log(`createLaw: Law Description: ${req.body.description}`)
+    console.log(`createLaw: Law Title: ${req.body.title}`)
+    console.log(`createLaw: state: ${req.body.state}`)
+    console.log(`createLaw: departmentId: ${req.body.departmentId}`)
+    //Check if Law with same title and department already exists
+    Law.exists({ title: req.body.title, departmentId: req.body.departmentId }).then(result => {
+        if (Object.is(result, null)) {
+            const law = new Law(req.body);
+            law.save()
+            console.log(`Law created! ${law}`)
+            res.send(law)
+        }
+        else {
+            console.log("Law in this department already exists")
+            res.status(500).send("Law already exists")
+        }
+    })
+})
+
+app.get("/getLawsForDepartmentId", (req, res) => {
+    console.log(`getLawsForDepartmentId: DepartmentId: ${req.query.departmentId}`)
+    try {
+        //Check if Law with same title and department already exists
+        Law.find({departmentId: req.query.departmentId}).then((laws) =>{
+            console.log(laws)
+            res.send(laws)
+        })
+    }
+    catch (error) {
+        console.log("getLawsForDepartmentId: Error")
+        res.status(500).send(err);
+    }
+})
+
 //app.post('/createCompany', createCompany);
 app.post("/createUser", (req, res) => {
     console.log(`createUser: First Name: ${req.body.firstName}`)
@@ -149,6 +187,19 @@ app.post('/deleteDepartment', async (req, res) => {
 app.get('/getCityOfficials', async (req, res) => {
     try {
         const officials = await Cityofficials.find();
+        res.send(officials);
+    }
+    catch (error) {
+        res.status(500).send(error);
+    }
+})
+
+app.get('/getCityOfficialByUserId', async (req, res) => {
+    console.log(`getCityOfficialByUserId: req ${req}`)
+    const userId = req.query.user_id;
+    console.log(`getCityOfficialByUserId: userId ${userId}`)
+    try {
+        const officials = await Cityofficials.find({userId: userId});
         res.send(officials);
     }
     catch (error) {
