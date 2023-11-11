@@ -5,7 +5,8 @@ const mongoose = require('mongoose');
 const MayorSchema = require('./Schema/MayorSchema.jsx');
 const Cityofficials = require('./Schema/CityofficialsSchema.jsx');
 const User = require('./Schema/UserSchema');
-const Law = require('./Schema/LawSchema.js')
+const Law = require('./Schema/LawSchema.js');
+const MayorVotes = require('./Schema/MayorVotesSchema.jsx');
 
 const express = require("express");
 const cors = require('cors');
@@ -119,8 +120,21 @@ app.post('/registerCandidate', async (req, res) => {
 
 app.get('/getCandidates', async (req, res) => {
     try {
+        const resp = [];
         const candidates = await Candidate.find();
-        res.send(candidates);
+        for (const candidate of candidates) {
+            const user = await User.findById(candidate.userID);
+            const candDetails = new Object({
+                _id: candidate._id,
+                policies: candidate.policies,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                emailId: user.emailId,
+            })
+            //console.log(candDetails);
+            resp.push(candDetails);
+        }
+        res.send(resp);
     }
     catch (error) {
         res.status(500).send(error);
@@ -195,9 +209,9 @@ app.get('/getCityOfficials', async (req, res) => {
 })
 
 app.get('/getCityOfficialByUserId', async (req, res) => {
-    console.log(`getCityOfficialByUserId: req ${req}`)
+    //console.log(`getCityOfficialByUserId: req ${req}`)
     const userId = req.query.user_id;
-    console.log(`getCityOfficialByUserId: userId ${userId}`)
+    // console.log(`getCityOfficialByUserId: userId ${userId}`)
     try {
         const officials = await Cityofficials.find({ userId: userId });
         res.send(officials);
@@ -229,7 +243,7 @@ app.post("/registerCityOfficial", async (req, res) => {
             catch (error) {
                 console.log("Error in updating userid");
             }
-            console.log(cityOfficial);
+            //console.log(cityOfficial);
             res.send(cityOfficial);
         }
     }
@@ -250,7 +264,7 @@ app.post("/registerDepartment", async (req, res) => {
         }
         else {
             await department.save(req.body);
-            console.log(department);
+            //console.log(department);
             res.send(department);
         }
     }
@@ -283,7 +297,7 @@ app.post("/registerMayor", async (req, res) => {
             catch (error) {
                 console.log("Error in updating userid");
             }
-            console.log(mayor);
+            //console.log(mayor);
             res.send(mayor);
         }
     }
@@ -292,6 +306,58 @@ app.post("/registerMayor", async (req, res) => {
         console.log("Error is", error)
         res.status(500).send(error);
     }
+})
+
+app.get('/getMayorVotes', async (req, res) => {
+    try {
+        const votes = await MayorVotes.find();
+        //
+        if (votes.length == 0) {
+            console.log("Creating votes array");
+            const yesCount = [];
+            const candidateIds = [];
+            const cands = await Candidate.find();
+            for (const cand of cands) {
+                const count = new Object({
+                    candidateId: cand._id,
+                    votes: 0,
+                })
+                candidateIds.push(cand._id);
+                yesCount.push(count);
+            }
+            const retval = new Object({
+                userID: [],
+                candidateID: candidateIds,
+                yesCount: yesCount,
+            });
+            console.log("Sending ", retval);
+            res.send(retval);
+        }
+        else {
+            console.log("Votes are ", votes);
+            res.send(votes);
+        }
+    }
+    catch (error) {
+        res.status(500).send(error);
+    }
+})
+app.post('/postMayorVotes', async (req, res) => {
+    const votes = new MayorVotes(req.body);
+    console.log("Posting ", votes.yesCount);
+    try {
+        const filter = {};
+        const updateDoc = {
+            $set: { userID: votes.userID, candidateID: votes.candidateID, yesCount: votes.yesCount, }
+        };
+        const options = { upsert: true };
+        await MayorVotes.updateOne(filter, updateDoc, options);
+    }
+    catch (error) {
+        console.log("Error in updating userid");
+    }
+    console.log(votes);
+    res.send(votes);
 })
 
 const mongostring = "mongodb+srv://delegateAdmin:test12345@delegatecluster.rcuipff.mongodb.net/";
