@@ -10,7 +10,7 @@ import Footer from "./footer";
 const onSignUp = (event, fName, lName, email, username, pword, setGoToHome) => {
   event.preventDefault();
   try {
-    axios.post("http://localhost:9000/createUser", { username: username, password: pword, firstName: fName, lastName: lName, emailId: email, isCityOfficial: "No", isMayor: "No" })
+    axios.post("http://localhost:9000/createUser", { username: username, password: pword, firstName: fName, lastName: lName, emailId: email, isCityOfficial: "No", isMayor: "No", isEmployee: "No", })
       .then((res) => {
         //something
         console.log(res.data)

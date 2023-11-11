@@ -57,7 +57,7 @@ app.get("/getLawsForDepartmentId", (req, res) => {
     console.log(`getLawsForDepartmentId: DepartmentId: ${req.query.departmentId}`)
     try {
         //Check if Law with same title and department already exists
-        Law.find({departmentId: req.query.departmentId}).then((laws) =>{
+        Law.find({ departmentId: req.query.departmentId }).then((laws) => {
             console.log(laws)
             res.send(laws)
         })
@@ -113,6 +113,27 @@ app.post('/registerCandidate', async (req, res) => {
     catch (error) {
         console.log("Details are ", req.body);
         console.log("Error is", error)
+        res.status(500).send(error);
+    }
+})
+
+app.get('/getCandidates', async (req, res) => {
+    try {
+        const candidates = await Candidate.find();
+        res.send(candidates);
+    }
+    catch (error) {
+        res.status(500).send(error);
+    }
+})
+
+app.get('/getUserById', async (req, res) => {
+    const _id = req.query._id;
+    try {
+        const user = await User.findOne({ _id: _id });
+        res.send(user);
+    }
+    catch (error) {
         res.status(500).send(error);
     }
 })
@@ -178,7 +199,7 @@ app.get('/getCityOfficialByUserId', async (req, res) => {
     const userId = req.query.user_id;
     console.log(`getCityOfficialByUserId: userId ${userId}`)
     try {
-        const officials = await Cityofficials.find({userId: userId});
+        const officials = await Cityofficials.find({ userId: userId });
         res.send(officials);
     }
     catch (error) {
@@ -200,7 +221,7 @@ app.post("/registerCityOfficial", async (req, res) => {
             try {
                 const filter = { _id: req.body.userId };
                 const updateDoc = {
-                    $set: { isCityOfficial: "Yes" }
+                    $set: { isCityOfficial: "Yes", isMayor: "No", isEmployee: "No" }
                 };
                 const options = { upsert: true };
                 await User.updateOne(filter, updateDoc, options);
@@ -254,7 +275,7 @@ app.post("/registerMayor", async (req, res) => {
             try {
                 const filter = { _id: req.body.userId };
                 const updateDoc = {
-                    $set: { isMayor: "Yes", isCityOfficial: "No" }
+                    $set: { isMayor: "Yes", isCityOfficial: "No", isEmployee: "No" }
                 };
                 const options = { upsert: true };
                 await User.updateOne(filter, updateDoc, options);
