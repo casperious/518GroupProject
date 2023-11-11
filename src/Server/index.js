@@ -57,7 +57,7 @@ app.get("/getLawsForDepartmentId", (req, res) => {
     console.log(`getLawsForDepartmentId: DepartmentId: ${req.query.departmentId}`)
     try {
         //Check if Law with same title and department already exists
-        Law.find({departmentId: req.query.departmentId}).then((laws) =>{
+        Law.find({ departmentId: req.query.departmentId }).then((laws) => {
             console.log(laws)
             res.send(laws)
         })
@@ -199,7 +199,7 @@ app.get('/getCityOfficialByUserId', async (req, res) => {
     const userId = req.query.user_id;
     console.log(`getCityOfficialByUserId: userId ${userId}`)
     try {
-        const officials = await Cityofficials.find({userId: userId});
+        const officials = await Cityofficials.find({ userId: userId });
         res.send(officials);
     }
     catch (error) {
