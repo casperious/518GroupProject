@@ -8,6 +8,7 @@ const UserSchema = new mongoose.Schema({
     emailId: String,
     isCityOfficial: String,
     isMayor: String,
+    isEmployee: String,
 });
 
 const User = mongoose.model("User", UserSchema);

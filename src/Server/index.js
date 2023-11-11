@@ -79,6 +79,27 @@ app.post('/registerCandidate', async (req, res) => {
     }
 })
 
+app.get('/getCandidates', async (req, res) => {
+    try {
+        const candidates = await Candidate.find();
+        res.send(candidates);
+    }
+    catch (error) {
+        res.status(500).send(error);
+    }
+})
+
+app.get('/getUserById', async (req, res) => {
+    const _id = req.query._id;
+    try {
+        const user = await User.findOne({ _id: _id });
+        res.send(user);
+    }
+    catch (error) {
+        res.status(500).send(error);
+    }
+})
+
 app.get("/getUser", async (req, res) => {
     //console.log(" username and password to look for are ", req.query.username, req.query.password);
     const username = req.query.username;
@@ -149,7 +170,7 @@ app.post("/registerCityOfficial", async (req, res) => {
             try {
                 const filter = { _id: req.body.userId };
                 const updateDoc = {
-                    $set: { isCityOfficial: "Yes" }
+                    $set: { isCityOfficial: "Yes", isMayor: "No", isEmployee: "No" }
                 };
                 const options = { upsert: true };
                 await User.updateOne(filter, updateDoc, options);
@@ -203,7 +224,7 @@ app.post("/registerMayor", async (req, res) => {
             try {
                 const filter = { _id: req.body.userId };
                 const updateDoc = {
-                    $set: { isMayor: "Yes", isCityOfficial: "No" }
+                    $set: { isMayor: "Yes", isCityOfficial: "No", isEmployee: "No" }
                 };
                 const options = { upsert: true };
                 await User.updateOne(filter, updateDoc, options);
