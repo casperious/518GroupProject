@@ -1,4 +1,5 @@
 import React, {  useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.css';
 import NavBar from './NavBar';
 import { Link } from "react-router-dom";
@@ -34,8 +35,12 @@ const onSubmitCreateLaw = (event, passedBy, description, title, departmentId, se
     axios.post("http://localhost:9000/createLaw", { passedBy: passedBy, description: description, title: title, state: "Pending", departmentId: departmentId })
     .then((res) => {
         console.log(res.data);
-        alert("Law Created Successfully")
-        setFetchLaws(true);
+        // Law was created, noew create vote history
+        axios.post("http://localhost:9000/createLawVote", { userID: res.data.passedBy, lawID: res.data._id}).then((res) => {
+            console.log(res.data);
+            alert("Law Created Successfully")
+            setFetchLaws(true);
+        }) 
     })
     .catch((error) => {
         console.log(error);
@@ -117,8 +122,17 @@ function Department()
     
     const [laws, setLaws] = useState([])
     const [fetchLaws, setFetchLaws] = useState(true)
+    
+    const navigate = useNavigate();
+    
+    const user = localStorage.getItem('user_id');
 
     useEffect(() => {
+        // Check That the user is signed in
+        if(Object.is(user, null)) {
+          alert("Please Login to View Departments!");
+          navigate('/login');
+        }
         if(fetchDepartment) {
             setCurrentDepartment(JSON.parse(localStorage.getItem('currentDepartment')))
             setFetchDepartment(false);
@@ -153,6 +167,10 @@ function Department()
         }
 
     })
+
+    if (!user) {
+        return null;
+    }
 
     return(
         <div>

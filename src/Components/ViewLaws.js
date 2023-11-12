@@ -6,48 +6,99 @@ import axios from "axios";
 import NavBar from "./NavBar";
 import Footer from "./footer";
 
+const renderLaw = (law, user_id) => {
+  // If user hasn't voted on the law already, render the vote buttons
+  const lawCardTitle = `(${law.department.name}) ${law.title}`
+  if(law.state === "Pending" && (law.vote_history.userID.indexOf(user_id) === -1)) {
+    return (
+      <div>
+        <h4>{lawCardTitle}</h4>
+        <p>{law.description}</p>
+        <div className="btn-container">
+          <button className="btn btn-outline-primary" onClick={(event) => {onVoteYay(event, law)}} data-key="YAY" value={law._id}> YAY {law.vote_history.yesCount} </button>
+          <button className="btn btn-outline-danger" onClick={(event) => {onVoteNay(event, law)}} data-key="NAY" value={law._id}> NAY {law.vote_history.noCount} </button>
+        </div><br/>
+      </div>
+    );
+  }
+  else if (law.state === "Pending" && (law.vote_history.userID.indexOf(user_id) !== -1)){
+    return (
+      <div>
+        <h4>{lawCardTitle}</h4>
+        <p>{law.description}</p>
+        <p>Vote Submitted</p><br/>
+          <button 
+            className="btn btn-outline-primary" 
+            onClick={(event) => {onVoteYay(event, law)}} 
+            data-key="YAY" 
+            value={law._id}
+            disabled
+            > YAY {law.vote_history.yesCount} </button>
+          <button 
+            className="btn btn-outline-danger" 
+            onClick={(event) => {onVoteNay(event, law)}} 
+            data-key="NAY" 
+            value={law._id}
+            disabled
+            > NAY {law.vote_history.noCount} </button>
+      </div>
+    );
+  }
+  else if (law.state === "Active"){
+    return (
+      <div>
+        <h4>{lawCardTitle}</h4>
+        <p>{law.description}</p>
+        <p>Voting is closed</p><br/>
+      </div>
+    );
+  }
+}
+
+const onVoteYay = (event, law) => {
+  // TODO
+}
+
+const onVoteNay = (event, law) => {
+  // TODO
+}
+
 function ViewLaws(props) {
 
   const [laws, setLaws] = useState([]);
+  const [fetchLaws, setFetchLaws] = useState(true);
   let user = localStorage.getItem('user_id');
 
   const navigate = useNavigate();
   const [alertShown, setAlertShown] = useState(false);
 
   useEffect(() => {
-    setLaws([{ id: 1, description: "dkcbsjkcd", liked: [1, 2, 3], disliked: [] }, { id: 2, description: "sdhvcjhsdvcjhs", liked: [1, 3], disliked: [2] }])
-  }, []);
-
-  const onClickHandler = (event) => {
-    event.preventDefault();
-    const key = event.target.getAttribute('data-key');
-    if (key == "like") {
-      const updatedLaws = laws.map((law) => {
-        if (law.id == event.target.value) {
-          return { ...law, liked: [...law.liked, 5] };
-        }
-        return law;
-      });
-      setLaws(updatedLaws);
-    }
-    if (key == "dislike") {
-      const updatedLaws = laws.map((law) => {
-        if (law.id == event.target.value) {
-          return { ...law, disliked: [...law.disliked, 5] };
-        }
-        return law;
-      });
-      setLaws(updatedLaws);
-    }
-  }
-
-  useEffect(() => {
+    // Prevent anonymous users to view laws page
     if (!user && !alertShown) {
       alert("Please Login to Vote Laws");
       navigate('/login');
       setAlertShown(true);
     }
+
+    if (fetchLaws) {
+      try {
+        axios.get("http://localhost:9000/getAllLawsAndVoteHistory", { })
+        .then((res) => {
+            console.log(res.data)
+            setLaws(res.data)
+        })
+        .catch((err) => {
+            console.log(err.response.data);
+        })
+        setFetchLaws(false);
+      }
+      catch(err) {
+        console.log(err)
+      }
+    }
+
   }, [user, alertShown, navigate]);
+
 
   if (!user) {
     return null;
@@ -60,15 +111,7 @@ function ViewLaws(props) {
         <div className="row justify-content-center align-items-center lcontainer">
           <form className="col-6">
             <h2 id="ttle">Laws</h2> <br />
-            {laws.map((law) => (
-              <div>
-                <h4> {law.description} </h4>
-                <div className="btn-container">
-                  <button className="btn btn-outline-primary" onClick={onClickHandler} data-key="like" value={law.id}> Like {law.liked.length} </button>
-                  <button className="btn btn-outline-danger" onClick={onClickHandler} data-key="dislike" value={law.id}> Dislike {law.disliked.length} </button>
-                </div>
-              </div>
-            ))}
+            {laws.map((law) => renderLaw(law, user))}
             <br />
           </form>
         </div>

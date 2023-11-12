@@ -95,8 +95,12 @@ function NavBar() {
                 {
                   departments.map((department) => {
                     return <li><a class="dropdown-item" href="/Department" onClick={(event) => {
-                      localStorage.removeItem('currentDepartment')
-                      localStorage.setItem('currentDepartment', JSON.stringify(department))
+                      // Check That the user is signed in
+                      const user = localStorage.getItem('user_id');
+                      if(!Object.is(user, null)) {
+                        localStorage.removeItem('currentDepartment')
+                        localStorage.setItem('currentDepartment', JSON.stringify(department))
+                      }
                     }}>{department.name}</a></li>;
                   })
                 }
