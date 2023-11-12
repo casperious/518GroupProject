@@ -9,6 +9,7 @@ import SignUpUser from './Components/SignUpUser';
 import RegisterCandidate from './Components/RegisterCandidate';
 import CreateDepartment from './Components/CreateDepartment';
 import CreateCityOfficial from './Components/CreateCityOfficial';
+import DepartmentControl from './Components/DepartmentControl';
 
 function App() {
   const navigate = useNavigate()
@@ -44,6 +45,7 @@ function App() {
       <Route path='/RegisterCandidate' element={<RegisterCandidate />}></Route>
       <Route path='/CreateDepartment' element={<CreateDepartment />}></Route>
       <Route path='/CreateCityOfficial' element={<CreateCityOfficial />}></Route>
+      <Route path='/DepartmentControl/:department_id' element={<DepartmentControl />}></Route>
     </Routes>
   );
 

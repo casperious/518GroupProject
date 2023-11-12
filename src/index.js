@@ -22,6 +22,7 @@ import Cityofficialsdepartments from './Components/Cityofficialsdepartments'
 import MayorDepartments from './Components/MayorDepartments';
 import CreateDepartment from './Components/CreateDepartment';
 import CreateCityOfficial from './Components/CreateCityOfficial';
+import DepartmentControl from './Components/DepartmentControl';
 import Footer from './Components/footer';
 
 
@@ -45,6 +46,7 @@ const router = createBrowserRouter(
       <Route path='/MayorDepartments' element={<MayorDepartments />}></Route>
       <Route path='/CreateDepartment' element={<CreateDepartment />}></Route>
       <Route path='/CreateCityOfficial' element={<CreateCityOfficial />}></Route>
+      <Route path='/DepartmentControl/:department_id' element={<DepartmentControl />}></Route>
     </>
   )
 )
