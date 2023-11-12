@@ -14,6 +14,7 @@ const Candidate = require('./Schema/CandidateSchema.jsx');
 const Department = require('./Schema/DepartmentSchema.js');
 const Feedback = require('./Schema/FeedbackSchema.jsx');
 const Complaint = require('./Schema/ComplaintSchema.jsx');
+const LawVotes = require('./Schema/LawVotesSchema.jsx');
 
 const app = express();
 const PORT = 9000;
@@ -35,19 +36,90 @@ app.get("/", (req, res) => {
 });
 // Add Api calls here
 
-app.post("/createLaw", (req, res) => {
+
+app.get("/getAllLawsAndVoteHistory", (req, res) => {
+    console.log(`getAllLawsAndVoteHistory: ...`)
+    var lawList = []
+    try {
+        Law.find().then(async (laws) => {
+            for(const law of laws) {
+                // Only get laws that passed or are currently being voted on
+                if(law.state === "Pending" || law.state === "Active") {
+                    // Get the Department name and ID for the law
+                    await Department.find({_id: law.departmentId}, {name: 1}).then(async (dept) => {
+                        
+                        //Get the vote for that law - Only return the _id, userID array, yesCount, and noCount for the vote record
+                        await LawVotes.find({lawID: law._id}, {userID: 1, yesCount: 1, noCount: 1}).then(async (voteHistory) => {
+                            //Add the law and its associated Voting History to lawList
+                            lawList.push({
+                                _id: law._id,
+                                title: law.title,
+                                description: law.description,
+                                state: law.state, 
+                                department: dept[0],
+                                vote_history: voteHistory[0],
+                            })
+                        })
+                    })
+                }
+            }
+            
+            console.log(lawList);
+            res.status(200).send(lawList)
+        })
+    }
+    catch (error) {
+        console.log("getLawsForDepartmentId: Error")
+        res.status(500).send(err);
+    }
+})
+
+app.post("/createLawVote", (req, res) => { 
+    console.log(`createLawVote: userID: ${req.body.userID}`)
+    console.log(`createLawVote: lawID: ${req.body.lawID}`)
+
+    try {
+        // Create a vote history object for this law
+        Law.find({ _id: req.body.lawID}).then(async (law) => {
+            if(law.length !== 0) {
+                //console.log("!!!!!!!!!!!!!!!!")
+                //console.log(law)
+                const voteHistory = new LawVotes({
+                    userID: [],
+                    lawID: law[0]._id,
+                    yesCount: 0,
+                    noCount : 0,
+                })
+                voteHistory.save()
+                console.log(`Vote history created: ${voteHistory}`)
+                lawFound = true;
+                // Send the law back to the client
+                res.status(200).send(voteHistory)
+            }
+            else {
+                res.status(500).send("Law not found in Database!")
+            }
+        })
+    }
+    catch (err) {
+        console.log(err)
+        res.status(500).send(err)
+    }
+})
+
+app.post("/createLaw", async (req, res) => {
     console.log(`createLaw: passedBy: ${req.body.passedBy}`)
     console.log(`createLaw: Law Description: ${req.body.description}`)
     console.log(`createLaw: Law Title: ${req.body.title}`)
     console.log(`createLaw: state: ${req.body.state}`)
     console.log(`createLaw: departmentId: ${req.body.departmentId}`)
     //Check if Law with same title and department already exists
-    Law.exists({ title: req.body.title, departmentId: req.body.departmentId }).then(result => {
+    await Law.exists({ title: req.body.title, departmentId: req.body.departmentId }).then(async (result) => {
         if (Object.is(result, null)) {
             const law = new Law(req.body);
-            law.save()
+            await law.save()
             console.log(`Law created! ${law}`)
-            res.send(law)
+            res.status(200).send(law)
         }
         else {
             console.log("Law in this department already exists")
