@@ -185,9 +185,26 @@ app.get('/getDepartments', async (req, res) => {
     }
 })
 
+app.get('/getDepartmentById', async (req, res) => {
+    //console.log("Fetching department ", req.query.department_id);
+    try {
+        const dept = await Department.findById({ _id: req.query.department_id });
+        res.send(dept);
+    }
+    catch (error) {
+        res.status(500).send(error);
+    }
+})
+
 app.post('/deleteDepartment', async (req, res) => {
     console.log("deleting ", req.body.department_id);
     try {
+        const cityOfficialFilter = { departmentID: req.body.department_id };
+        const update = {
+            $set: { departmentID: null }
+        }
+        const opt = { upsert: false };
+        await Cityofficials.updateOne(cityOfficialFilter, update, opt);
         const result = await Department.findByIdAndDelete({ _id: req.body.department_id });
         //console.log(result);
         res.send(result);
@@ -199,9 +216,57 @@ app.post('/deleteDepartment', async (req, res) => {
 })
 
 app.get('/getCityOfficials', async (req, res) => {
+    //console.log("Getting city officials");
     try {
         const officials = await Cityofficials.find();
-        res.send(officials);
+        const ret = [];
+        for (const official of officials) {
+            //console.log(official);
+            const user = await User.findById({ _id: official.userId });
+            //console.log("user is", user);
+            const officialUser = new Object({
+                userId: official.userId,
+                dateAppointed: official.dateAppointed,
+                endDat: official.endDate,
+                departmentID: official.departmentID,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                emailId: user.emailId,
+            })
+            ret.push(officialUser);
+        }
+        //console.log(ret);
+        res.send(ret);
+    }
+    catch (error) {
+        res.status(500).send(error);
+    }
+})
+app.get('/getUnassignedCityOfficials', async (req, res) => {
+    //console.log("Getting city officials");
+    try {
+        const officials = await Cityofficials.find();
+        const ret = [];
+        for (const official of officials) {
+            console.log(official);
+            if (official.departmentID == null) {
+                const user = await User.findById({ _id: official.userId });
+                //console.log("user is", user);
+                const officialUser = new Object({
+                    _id: official._id,
+                    userId: official.userId,
+                    dateAppointed: official.dateAppointed,
+                    endDat: official.endDate,
+                    departmentID: official.departmentID,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    emailId: user.emailId,
+                })
+                ret.push(officialUser);
+            }
+        }
+        //console.log(ret);
+        res.send(ret);
     }
     catch (error) {
         res.status(500).send(error);
@@ -257,13 +322,42 @@ app.post("/registerCityOfficial", async (req, res) => {
 app.post("/registerDepartment", async (req, res) => {
     try {
         const department = new Department(req.body);
-        const existsDepartment = await Candidate.findOne({ name: department.name });
+        const existsDepartment = await Department.findOne({ _id: department._id });
         if (existsDepartment) {
             console.log("Department exists");
-            res.status(510).send("Department exists");
+            const cityOfficialFilter = { departmentID: department._id };
+            const update = {
+                $set: { departmentID: null }
+            }
+            const opt = { upsert: false };
+            await Cityofficials.updateOne(cityOfficialFilter, update, opt);
+
+            const newCityOfficialFilter = { _id: department.cityOfficialID };
+            const newUpdate = {
+                $set: { departmentID: department._id }
+            }
+            const newOpt = { upsert: false };
+            await Cityofficials.updateOne(newCityOfficialFilter, newUpdate, newOpt);
+
+
+            const filter = { _id: existsDepartment._id };
+            const updateDoc = {
+                $set: { name: department.name, cityOfficialID: department.cityOfficialID, createdBy: department.createdBy, budget: department.budget, rules: department.rules, employees: department.employees }
+            };
+            const options = { upsert: true };
+            const ret = await Department.updateOne(filter, updateDoc, options);
+
+            res.send(ret);
         }
         else {
+            console.log(req.body.cityOfficialID);
             await department.save(req.body);
+            const cityOfficialFilter = { _id: department.cityOfficialID };
+            const update = {
+                $set: { departmentID: department._id }
+            }
+            const opt = { upsert: true };
+            await Cityofficials.updateOne(cityOfficialFilter, update, opt);
             //console.log(department);
             res.send(department);
         }
