@@ -543,9 +543,10 @@ app.post('/createEmployee', async (req, res) => {
     }
 })
 
-app.get('/getEmployee', async (req, res) =>{
+app.get('/getEmployee', async (req, res) => {
     const emp = await Employee.find()
     res.json(emp);
+})
 
 app.post('/postFeedback', async (req, res) => {
     const feedback = new Feedback(req.body);
