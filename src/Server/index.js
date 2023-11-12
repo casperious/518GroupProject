@@ -12,8 +12,11 @@ const express = require("express");
 const cors = require('cors');
 const Candidate = require('./Schema/CandidateSchema.jsx');
 const Department = require('./Schema/DepartmentSchema.js');
+
+const Employee = require('./Schema/Employee.js')
 const Feedback = require('./Schema/FeedbackSchema.jsx');
 const Complaint = require('./Schema/ComplaintSchema.jsx');
+
 
 const app = express();
 const PORT = 9000;
@@ -455,6 +458,22 @@ app.post('/postMayorVotes', async (req, res) => {
     console.log(votes);
     res.send(votes);
 })
+
+app.post('/createEmployee', async (req, res) => {
+    try {
+        const emp = new Employee(req.body);
+        console.log(emp);
+        await emp.save();
+        res.send(emp);
+    } catch (error) {
+        
+        res.status(500).send(error.message);
+    }
+})
+
+app.get('/getEmployee', async (req, res) =>{
+    const emp = await Employee.find()
+    res.json(emp);
 
 app.post('/postFeedback', async (req, res) => {
     const feedback = new Feedback(req.body);

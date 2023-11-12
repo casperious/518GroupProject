@@ -13,19 +13,81 @@ export default function CityDept({ setActive }) {
   const [alertShown, setAlertShown] = useState(false);
 
   const [cityValues, setCityValues] = useState({
-    department: '',
-    employee: '', // Default value
-    job: '',
+    dept_id: '',
+    emp_id: '', 
+    jobDescription: '',
   });
 
-  const handleChange = (event) => {
-    setCityValues({ ...cityValues, [event.target.name]: event.target.value });
-  };
+  const [userData, setUserData] = useState([]);
+  const [deptData, setDeptData] = useState([]);
+  const [submittedData, setSubmittedData] = useState([]);
+
+  
+
+  const handleInputChange = (event) => {
+    
+    const { name, value } = event.target;
+    setCityValues({ ...cityValues, [name]: value });
+   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    // You can add your form submission logic here.
+
+    axios.post('http://localhost:9000/createEmployee', cityValues)
+    .then((res) => {
+      
+      if (res.data) {
+        alert('Employee added successfully');
+        
+      }
+    })
+    .catch((err) => {
+      alert('Error in adding employee');
+      
+      
+    });
   };
+
+  useEffect(() =>{
+    
+    axios
+    .get('http://localhost:9000/getEmployee')
+    .then(function(response){
+      
+      const allEmployee = response.data;
+      
+      setCityValues(allEmployee);
+      
+      setSubmittedData(allEmployee);
+    })
+    .catch(function(error){
+      console.log(error);
+    });
+   
+    axios.get('http://localhost:9000/getUsers')
+    .then(function(response){
+      const userData = response.data;
+      
+      setUserData(userData);
+    })
+    .catch(function(error){
+      console.log(error);
+    }
+    )
+    axios.get('http://localhost:9000/getDepartments')
+    .then(function(response){
+      const alldept = response.data;
+      setDeptData(alldept);
+    })
+    .catch(function(error){
+      console.log(error);
+    }
+    )
+
+  }, []
+    
+  );
+
 
   useEffect(() => {
     if (!user && !alertShown) {
@@ -47,19 +109,22 @@ export default function CityDept({ setActive }) {
           <div className="col-md-6">
             <div className="card">
               <div className="card-body">
-                <h2 className="card-title">Welcome Cityofficial 1</h2>
+                <h2 className="card-title">Welcome Cityofficial</h2>
                 <form onSubmit={handleSubmit}>
                   <div className="form-group">
                     <label>Departments:</label>
                     <select
                       className="form-control"
-                      name="department"
-                      value={cityValues.department}
-                      onChange={handleChange}
+                      name="dept_id"
+                      value={cityValues.dept_id}
+                      onChange={handleInputChange}
                     >
-                      <option value="Department 1">Department 1</option>
-                      <option value="Department 2">Department 2</option>
-                      <option value="Department 3">Department 3</option>
+                      <option value ="">Select a department </option>
+                    {deptData.map((departments) => (
+                      <option key={departments._id} value = {departments._id}>{departments.name}</option>
+
+                    ))
+                    }
                     </select>
                   </div>
 
@@ -67,13 +132,26 @@ export default function CityDept({ setActive }) {
                     <label>Employees</label>
                     <select
                       className="form-control"
-                      name="employee"
-                      value={cityValues.employee}
-                      onChange={handleChange}
+                      name="emp_id"
+                      value={cityValues.emp_id}
+                      onChange={handleInputChange}
                     >
-                      <option value="employee1">Employee 1</option>
-                      <option value="employee2">Employee 2</option>
-                      <option value="employee3">Employee 3</option>
+                      
+
+                    <option value="">Select employee </option>
+                          {userData.map((users) => {
+                              
+                              if (!users.isCityOfficials && !users.isMayor) {
+                          return (
+                              <option key={users._id} value={users._id}>
+                              {users.firstName} {users.lastName}
+                    </option>
+                );
+               } else {
+              
+              return null;
+              }
+            })}
                     </select>
                   </div>
 
@@ -82,9 +160,9 @@ export default function CityDept({ setActive }) {
                     <input
                       type="text"
                       className="form-control"
-                      name="job"
-                      value={cityValues.job}
-                      onChange={handleChange}
+                      name="jobDescription"
+                      value={cityValues.jobDescription}
+                      onChange={handleInputChange}
                     />
                   </div>
 
