@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.css';
 import axios, { all } from "axios";
 import NavBar from "./NavBar";
@@ -11,6 +12,10 @@ function VoteMayor(props) {
   const [voted, setVoted] = useState("No");
   const [userID, setUserID] = useState([]);
   const [yesCount, setYesCount] = useState([]);
+  let user = localStorage.getItem('user_id');
+
+  const navigate = useNavigate();
+  const [alertShown, setAlertShown] = useState(false);
 
   const user_id = localStorage.getItem("user_id");
   useEffect(() => {
@@ -82,12 +87,25 @@ function VoteMayor(props) {
     }
   };
 
+  useEffect(() => {
+    if (!user && !alertShown) {
+      alert("Please Login to Vote Mayor");
+      navigate('/login');
+      setAlertShown(true);
+    }
+  }, [user, alertShown, navigate]);
+
+  if (!user) {
+    return null;
+  }
+
+
   return (
     <div>
       <NavBar />
       <div className="container">
         <div className="row justify-content-center align-items-center lcontainer team-list">
-          <h4 style={{ color: 'green' }}>Vote Mayor</h4> <br /> <br />
+          <h4 id="ttle">Vote Mayor</h4> <br /> <br />
           {voted != "No" ? (
             <h4>You have already voted</h4>
           ) : (

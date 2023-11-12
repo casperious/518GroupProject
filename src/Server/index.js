@@ -12,6 +12,8 @@ const express = require("express");
 const cors = require('cors');
 const Candidate = require('./Schema/CandidateSchema.jsx');
 const Department = require('./Schema/DepartmentSchema.js');
+const Feedback = require('./Schema/FeedbackSchema.jsx');
+const Complaint = require('./Schema/ComplaintSchema.jsx');
 
 const app = express();
 const PORT = 9000;
@@ -452,6 +454,30 @@ app.post('/postMayorVotes', async (req, res) => {
     }
     console.log(votes);
     res.send(votes);
+})
+
+app.post('/postFeedback', async (req, res) => {
+    const feedback = new Feedback(req.body);
+    try {
+        feedback.save();
+        console.log(`Feedback Posted! ${feedback}`)
+        res.send(feedback);
+    }
+    catch (error) {
+        res.status(500).send(error);
+    }
+})
+
+app.post('/postComplaint', async (req, res) => {
+    const complaint = new Complaint(req.body);
+    try {
+        complaint.save();
+        console.log(`Complaint Posted! ${complaint}`)
+        res.send(complaint);
+    }
+    catch (error) {
+        res.status(500).send(error);
+    }
 })
 
 const mongostring = "mongodb+srv://delegateAdmin:test12345@delegatecluster.rcuipff.mongodb.net/";
