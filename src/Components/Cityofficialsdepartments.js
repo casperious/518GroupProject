@@ -1,10 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.css';
 import axios from 'axios';
 import NavBar from "./NavBar";
 import Footer from "./footer";
 
 export default function CityDept({ setActive }) {
+
+  let user = localStorage.getItem('user_id');
+
+  const navigate = useNavigate();
+  const [alertShown, setAlertShown] = useState(false);
+
   const [cityValues, setCityValues] = useState({
     department: '',
     employee: '', // Default value
@@ -19,6 +26,18 @@ export default function CityDept({ setActive }) {
     event.preventDefault();
     // You can add your form submission logic here.
   };
+
+  useEffect(() => {
+    if (!user && !alertShown) {
+      alert("Please Login to View City Official Departments");
+      navigate('/login');
+      setAlertShown(true);
+    }
+  }, [user, alertShown, navigate]);
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <div>
