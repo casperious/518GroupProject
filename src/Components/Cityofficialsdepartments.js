@@ -121,12 +121,12 @@ export default function CityDept({  }) {
                       
 
                     <option value="">Select employee </option>
-                          {userData.map((user) => {
+                          {userData.map((users) => {
                               
-                              if (!user.isCityOfficials && !user.isMayor) {
+                              if (!users.isCityOfficials && !users.isMayor) {
                           return (
-                              <option key={user._id} value={user._id}>
-                              {user.firstName} {user.lastName}
+                              <option key={users._id} value={users._id}>
+                              {users.firstName} {users.lastName}
                     </option>
                 );
                } else {
