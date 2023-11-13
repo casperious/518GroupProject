@@ -54,7 +54,7 @@ function RegisterCandidate(props) {
                         </div>
                         <br />
                         <br />
-                        <button type="button" onClick={handleSubmit} className="btn btn-primary">Send Feedback</button>
+                        <button type="button" onClick={handleSubmit} className="btn btn-primary">Register</button>
                     </form>
                 </div>
             </div>

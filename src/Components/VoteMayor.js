@@ -121,7 +121,7 @@ function VoteMayor(props) {
                 <tbody>
                   {candidates.map((candidate) => (
                     <tr key={candidate._id}>
-                      <td>{candidate.firstName} {candidate.lastName}</td>
+                      <td>{candidate.firstName} {candidate.lastName}<br></br>{candidate.sponsors[0]}</td>
                       <td><Popup trigger={<button> Policies</button>} position="right center" modal nested>
                         {
                           candidate.policies.map((policy) => (

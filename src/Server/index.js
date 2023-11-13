@@ -485,7 +485,7 @@ app.get('/getMayorVotes', async (req, res) => {
         const votes = await MayorVotes.find();
         //
         if (votes.length == 0) {
-            console.log("Creating votes array");
+            //console.log("Creating votes array");
             const yesCount = [];
             const candidateIds = [];
             const cands = await Candidate.find();
@@ -502,11 +502,11 @@ app.get('/getMayorVotes', async (req, res) => {
                 candidateID: candidateIds,
                 yesCount: yesCount,
             });
-            console.log("Sending ", retval);
+            // console.log("Sending ", retval);
             res.send(retval);
         }
         else {
-            console.log("Votes are ", votes);
+            //console.log("Votes are ", votes);
             res.send(votes);
         }
     }
