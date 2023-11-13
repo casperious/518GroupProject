@@ -21,7 +21,7 @@ function RegisterCandidate(props) {
     const handleSubmit = (e) => {
         console.log("Submitting candidate registration", policies);
         try {
-            axios.post("http://localhost:9000/registerCandidate", { userID: user_id, policies: policies })
+            axios.post("http://localhost:9000/registerCandidate", { userID: user_id, policies: policies, sponsors: [] })
                 .then((res) => {
                     //something
                     console.log(res.data)
