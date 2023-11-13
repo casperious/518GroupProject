@@ -4,7 +4,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import NavBar from './NavBar';
 import { Link } from "react-router-dom";
 import Footer from "./footer";
-import axios from 'axios'
+import axios from 'axios';
 
 const onVoteYay = (event, user_id, law, setFetchLaws) => {
     event.preventDefault();
@@ -109,11 +109,11 @@ const getLawCard = (law, setFetchLaws) => {
 const onSubmitCreateLaw = (event, passedBy, description, title, departmentId, setFetchLaws) => {
     event.preventDefault()
     axios.post("http://localhost:9000/createLaw", { passedBy: passedBy, description: description, title: title, state: "Pending", departmentId: departmentId })
-    .then((res) => {
-        console.log(res.data);
+    .then((res1) => {
+        //console.log(res1.data);
         // Law was created, noew create vote history
-        axios.post("http://localhost:9000/createLawVote", { userID: res.data.passedBy, lawID: res.data._id}).then((res) => {
-            console.log(res.data);
+        axios.post("http://localhost:9000/createLawVote", { userID: res1.data.passedBy, lawID: res1.data._id}).then((res) => {
+            //console.log(res.data);
             alert("Law Created Successfully")
             setFetchLaws(true);
         }) 
