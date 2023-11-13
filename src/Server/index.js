@@ -39,6 +39,69 @@ app.get("/", (req, res) => {
 });
 // Add Api calls here
 
+app.patch("/addYesVoteForLawVoteId", async (req, res) => {
+    console.log(`addYesVoteForLawVoteId: user_id: ${req.body.user_id}`)
+    console.log(`addYesVoteForLawVoteId: law_vote: ${req.body.law_vote}`)
+
+    //Build the law vote query
+    const query = {
+        _id: req.body.law_vote._id,
+    }
+
+    //Build the updated data
+    const newCount = req.body.law_vote.yesCount + 1
+    const newUserList = req.body.law_vote.userID
+    newUserList.push(req.body.user_id)
+    const updateDoc = {
+        $set : {
+            yesCount: newCount,
+            userID: newUserList
+        }
+    }
+
+    try {
+        await LawVotes.updateOne(query, updateDoc).then(async (result) => {
+            console.log(result);
+            res.status(200).send(result);
+        })
+    }
+    catch (err) {
+        console.log(err)
+        res.status(500).send(err)
+    }
+})
+
+app.patch("/addNoVoteForLawVoteId", async (req, res) => {
+    console.log(`addYesVoteForLawVoteId: user_id: ${req.body.user_id}`)
+    console.log(`addYesVoteForLawVoteId: law_vote: ${req.body.law_vote}`)
+
+    //Build the law vote query
+    const query = {
+        _id: req.body.law_vote._id,
+    }
+
+    //Build the updated data
+    const newCount = req.body.law_vote.noCount + 1
+    const newUserList = req.body.law_vote.userID
+    newUserList.push(req.body.user_id)
+    const updateDoc = {
+        $set : {
+            noCount: newCount,
+            userID: newUserList
+        }
+    }
+
+    try {
+        await LawVotes.updateOne(query, updateDoc).then(async (result) => {
+            console.log(result);
+            res.status(200).send(result);
+        })
+    }
+    catch (err) {
+        console.log(err)
+        res.status(500).send(err)
+    }
+})
 
 app.get("/getAllLawsAndVoteHistory", (req, res) => {
     console.log(`getAllLawsAndVoteHistory: ...`)
@@ -134,10 +197,29 @@ app.post("/createLaw", async (req, res) => {
 app.get("/getLawsForDepartmentId", (req, res) => {
     console.log(`getLawsForDepartmentId: DepartmentId: ${req.query.departmentId}`)
     try {
-        //Check if Law with same title and department already exists
-        Law.find({ departmentId: req.query.departmentId }).then((laws) => {
+        var lawList = []
+        Law.find({ departmentId: req.query.departmentId }).then(async (laws) => {
             console.log(laws)
-            res.send(laws)
+            // Attach the law votes for convience
+            for(const law of laws) {
+                // Only get laws that passed or are currently being voted on
+                if (law.state === "Pending" || law.state === "Active") {
+                    //Get the vote for that law - Only return the _id, userID array, yesCount, and noCount for the vote record
+                    await LawVotes.find({ lawID: law._id }, { userID: 1, yesCount: 1, noCount: 1 }).then(async (voteHistory) => {
+                        //Add the law and its associated Voting History to lawList
+                        lawList.push({
+                            _id: law._id,
+                            title: law.title,
+                            description: law.description,
+                            state: law.state,
+                            department: req.query.departmentId,
+                            vote_history: voteHistory[0],
+                        })
+                    })
+                }
+            }
+            console.log(lawList)
+            res.send(lawList)
         })
     }
     catch (error) {
