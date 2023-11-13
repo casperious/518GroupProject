@@ -45,20 +45,20 @@ app.get("/getAllLawsAndVoteHistory", (req, res) => {
     var lawList = []
     try {
         Law.find().then(async (laws) => {
-            for(const law of laws) {
+            for (const law of laws) {
                 // Only get laws that passed or are currently being voted on
-                if(law.state === "Pending" || law.state === "Active") {
+                if (law.state === "Pending" || law.state === "Active") {
                     // Get the Department name and ID for the law
-                    await Department.find({_id: law.departmentId}, {name: 1}).then(async (dept) => {
-                        
+                    await Department.find({ _id: law.departmentId }, { name: 1 }).then(async (dept) => {
+
                         //Get the vote for that law - Only return the _id, userID array, yesCount, and noCount for the vote record
-                        await LawVotes.find({lawID: law._id}, {userID: 1, yesCount: 1, noCount: 1}).then(async (voteHistory) => {
+                        await LawVotes.find({ lawID: law._id }, { userID: 1, yesCount: 1, noCount: 1 }).then(async (voteHistory) => {
                             //Add the law and its associated Voting History to lawList
                             lawList.push({
                                 _id: law._id,
                                 title: law.title,
                                 description: law.description,
-                                state: law.state, 
+                                state: law.state,
                                 department: dept[0],
                                 vote_history: voteHistory[0],
                             })
@@ -66,7 +66,7 @@ app.get("/getAllLawsAndVoteHistory", (req, res) => {
                     })
                 }
             }
-            
+
             console.log(lawList);
             res.status(200).send(lawList)
         })
@@ -77,21 +77,21 @@ app.get("/getAllLawsAndVoteHistory", (req, res) => {
     }
 })
 
-app.post("/createLawVote", (req, res) => { 
+app.post("/createLawVote", (req, res) => {
     console.log(`createLawVote: userID: ${req.body.userID}`)
     console.log(`createLawVote: lawID: ${req.body.lawID}`)
 
     try {
         // Create a vote history object for this law
-        Law.find({ _id: req.body.lawID}).then(async (law) => {
-            if(law.length !== 0) {
+        Law.find({ _id: req.body.lawID }).then(async (law) => {
+            if (law.length !== 0) {
                 //console.log("!!!!!!!!!!!!!!!!")
                 //console.log(law)
                 const voteHistory = new LawVotes({
                     userID: [],
                     lawID: law[0]._id,
                     yesCount: 0,
-                    noCount : 0,
+                    noCount: 0,
                 })
                 voteHistory.save()
                 console.log(`Vote history created: ${voteHistory}`)
@@ -204,6 +204,7 @@ app.get('/getCandidates', async (req, res) => {
             const candDetails = new Object({
                 _id: candidate._id,
                 policies: candidate.policies,
+                sponsors: candidate.sponsors,
                 firstName: user.firstName,
                 lastName: user.lastName,
                 emailId: user.emailId,
@@ -538,7 +539,7 @@ app.post('/createEmployee', async (req, res) => {
         await emp.save();
         res.send(emp);
     } catch (error) {
-        
+
         res.status(500).send(error.message);
     }
 })
