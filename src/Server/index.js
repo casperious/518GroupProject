@@ -1,5 +1,7 @@
 //const {createUser, getUser} = require('./api/companyAPIs')
 //const {createCompany, getCompany} = require('./api/companyAPIs.js')
+const schedule = require('node-schedule');
+const moment = require('moment')
 
 const mongoose = require('mongoose');
 const MayorSchema = require('./Schema/MayorSchema.jsx');
@@ -37,7 +39,51 @@ app.use((req, res, next) => {
 app.get("/", (req, res) => {
     res.status(200).send("API is live !");
 });
+
+// Add Automated Jobs / Scheduled Jobs here
+const updateLawState = async (law_id) => {
+    try {
+        await Law.findOne({ _id: law_id}).then(async (law) => {
+            //Get the vote history for that law
+            await LawVotes.findOne({ lawID: law_id }).then(async (voting_history) => {
+                var newState = ""
+                // Determine the outcome of the vote
+                if (voting_history.yesCount > voting_history.noCount) {
+                    newState = "Active"
+                }
+                else {
+                    newState = "Rejected"
+                }
+
+                //Build query to update law
+                const query = {
+                    _id: law_id,
+                }
+                //Build parameters for the updated law
+                const updateDoc = {
+                    $set: {
+                        state: newState,
+                    }
+                }
+                
+                //Update Law
+                await Law.updateOne(query, updateDoc).then(async (result) => {
+                    console.log(result);
+                })
+            })
+        })
+    }
+    catch (err){
+        console.log(err)
+    }
+}
+
 // Add Api calls here
+
+app.patch("/updateLawStatusForLawId", async (req, res) => {
+    console.log(`updateLawStatusForLawId: law_id: ${req.body.law_id}`)
+    
+})
 
 app.patch("/addYesVoteForLawVoteId", async (req, res) => {
     console.log(`addYesVoteForLawVoteId: user_id: ${req.body.user_id}`)
@@ -185,6 +231,17 @@ app.post("/createLaw", async (req, res) => {
             const law = new Law(req.body);
             await law.save()
             console.log(`Law created! ${law}`)
+            // Schedule update for Law State
+            var currentDate = moment()
+            var pollClose = moment(currentDate).add(1, "m").toDate()
+            console.log(pollClose);
+            //Schedule Job
+            console.log("createLaw: Schduling Update Law State")
+            const job = schedule.scheduleJob(pollClose, () => {
+                console.log("createLaw: Updating Law State")
+                updateLawState(law._id)
+            });
+            // Send response
             res.status(200).send(law)
         }
         else {
