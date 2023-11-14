@@ -13,7 +13,11 @@
     "express": "^4.18.2",
     "moment": "^2.29.4",
     "mongoose": "^8.0.0",
+<<<<<<< HEAD
+    "node": "^21.1.0",
+=======
     "node-schedule": "^2.1.1",
+>>>>>>> 4dae6b3699fd74b3a06395bbeeb1fdfb3fc11a55
     "nodemon": "^3.0.1",
     "react": "^18.2.0",
     "react-bootstrap": "^2.9.1",
