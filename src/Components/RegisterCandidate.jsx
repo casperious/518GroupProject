@@ -21,7 +21,7 @@ function RegisterCandidate(props) {
     const handleSubmit = (e) => {
         console.log("Submitting candidate registration", policies);
         try {
-            axios.post("http://localhost:9000/registerCandidate", { userID: user_id, policies: policies })
+            axios.post("http://localhost:9000/registerCandidate", { userID: user_id, policies: policies, sponsors: [] })
                 .then((res) => {
                     //something
                     console.log(res.data)
@@ -54,7 +54,7 @@ function RegisterCandidate(props) {
                         </div>
                         <br />
                         <br />
-                        <button type="button" onClick={handleSubmit} className="btn btn-primary">Send Feedback</button>
+                        <button type="button" onClick={handleSubmit} className="btn btn-primary">Register</button>
                     </form>
                 </div>
             </div>

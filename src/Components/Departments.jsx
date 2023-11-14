@@ -4,23 +4,99 @@ import 'bootstrap/dist/css/bootstrap.css';
 import NavBar from './NavBar';
 import { Link } from "react-router-dom";
 import Footer from "./footer";
-import axios from 'axios'
+import axios from 'axios';
 
-const getLawCard = (law) => {
-    if(law.state === "Pending") {
+const onVoteYay = (event, user_id, law, setFetchLaws) => {
+    event.preventDefault();
+    axios.patch("http://localhost:9000/addYesVoteForLawVoteId", { user_id: user_id, law_vote: law.vote_history })
+    .then((res) => {
+        if(res.data) {
+            console.log(res.data)
+            alert(`Successfully voted YAY on ${law.title}`)
+            setFetchLaws(true)
+        }
+    })
+    .catch((err) => {
+        console.log(err)
+        alert(`Server Error Occured when casting vote`)
+    })
+}
+
+const onVoteNay = (event, user_id, law, setFetchLaws) => {
+    event.preventDefault();
+    axios.patch("http://localhost:9000/addNoVoteForLawVoteId", { user_id: user_id, law_vote: law.vote_history })
+    .then((res) => {
+        if(res.data) {
+            console.log(res.data)
+            alert(`Successfully voted NAY on ${law.title}`)
+            setFetchLaws(true)
+        }
+    })
+    .catch((err) => {
+        console.log(err)
+        alert(`Server Error Occured when casting vote`)
+    })
+}
+
+const getLawCard = (law, setFetchLaws) => {
+    const user_id = localStorage.getItem('user_id');
+    const role = localStorage.getItem('role');
+    const validRole = (role === "Citizen" || role === "Employee") 
+    const alreadyVoted = law.vote_history.userID.indexOf(user_id) !== -1
+
+    //console.log(`Is the current user a valid role: ${validRole}`)
+    //console.log(`Has the current user voted already: ${alreadyVoted}`)
+
+    if(law.state === "Pending" && validRole && !alreadyVoted) {
         return (
             <li className="card-text text-start" id={law._id}>
                 {law.title}<br/>
                 {law.description}<br/>
-                <button className="like-button btn btn-success"><i className="fa fa-thumbs-up"></i>Yay</button>
-                <button className="dislike-button btn btn-danger"><i className="fa fa-thumbs-down"></i>Nay</button>
+                <button 
+                    className="like-button btn btn-success" 
+                    onClick={(event) => {onVoteYay(event, user_id, law, setFetchLaws)}} 
+                    data-key="YAY" 
+                    value={law._id}
+                    > YAY {law.vote_history.yesCount} </button>
+                <button 
+                    className="dislike-button btn btn-danger" 
+                    onClick={(event) => {onVoteNay(event, user_id, law, setFetchLaws)}} 
+                    data-key="NAY" 
+                    value={law._id}
+                    > NAY {law.vote_history.noCount} </button>
+            </li>
+        );
+    }
+    else if(law.state === "Pending" && (!validRole || alreadyVoted)) {
+        // Saving these buttons incase we go back to them
+        //<button className="like-button btn btn-success" disabled><i className="fa fa-thumbs-up"></i>Yay</button>
+        //<button className="dislike-button btn btn-danger" disabled><i className="fa fa-thumbs-down"></i>Nay</button>
+        return (
+            <li className="card-text text-start" id={law._id}>
+                {law.title}<br/>
+                {law.description}<br/>
+                <button 
+                    className="like-button btn btn-success" 
+                    onClick={(event) => {onVoteYay(event, user_id, law, setFetchLaws)}} 
+                    data-key="YAY" 
+                    value={law._id}
+                    disabled
+                    > YAY {law.vote_history.yesCount} </button>
+                <button 
+                    className="dislike-button btn btn-danger" 
+                    onClick={(event) => {onVoteNay(event, user_id, law, setFetchLaws)}} 
+                    data-key="NAY" 
+                    value={law._id}
+                    disabled
+                    > NAY {law.vote_history.noCount} </button>
             </li>
         );
     }
     else if (law.state === "Active") {
+        const title = `${law.title} (Active)`
         return (
             <li className="card-text text-start" id={law._id}>
-                {law.title}<br/>
+                {title}<br/>
                 {law.description}<br/>
             </li>
         );
@@ -34,11 +110,11 @@ const getLawCard = (law) => {
 const onSubmitCreateLaw = (event, passedBy, description, title, departmentId, setFetchLaws) => {
     event.preventDefault()
     axios.post("http://localhost:9000/createLaw", { passedBy: passedBy, description: description, title: title, state: "Pending", departmentId: departmentId })
-    .then((res) => {
-        console.log(res.data);
+    .then((res1) => {
+        //console.log(res1.data);
         // Law was created, noew create vote history
-        axios.post("http://localhost:9000/createLawVote", { userID: res.data.passedBy, lawID: res.data._id}).then((res) => {
-            console.log(res.data);
+        axios.post("http://localhost:9000/createLawVote", { userID: res1.data.passedBy, lawID: res1.data._id}).then((res) => {
+            //console.log(res.data);
             alert("Law Created Successfully")
             setFetchLaws(true);
         }) 
@@ -73,9 +149,7 @@ const getDepartmentHeaderLeft = (name, budget, isMyDepartment) => {
 }
 
 const getDepartmentHeaderRight = (setContractFormOpen, contractFormOpen, setCreateLawFormOpen, createLawFormOpen, isMyDepartment) => {
-    //Get the current user role
-    //...
-    //Conditionally render if we show the budget or not
+    //Conditionally render buttons for create law, view contracts, post contracts, etc.
     if(isMyDepartment) {
         return (
             <>
@@ -232,7 +306,7 @@ function Department()
             const dept = JSON.parse(localStorage.getItem('currentDepartment'))
             axios.get("http://localhost:9000/getLawsForDepartmentId", { params: { departmentId: dept._id}})
             .then((res) => {
-                //console.log(res.data)
+                console.log(res.data)
                 setLaws(res.data)
             })
             .catch((err) => {
@@ -346,7 +420,7 @@ function Department()
                             <div className='card-title '><h5>List of Laws</h5>  </div> 
                                 <ul className="custom-list">
                                 {
-                                    laws.map((law) => getLawCard(law))
+                                    laws.map((law) => getLawCard(law, setFetchLaws))
                                 }
                                 </ul>                            
                             </div>
