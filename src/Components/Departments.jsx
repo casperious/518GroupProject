@@ -106,6 +106,7 @@ const getLawCard = (law, setFetchLaws) => {
     }
 }
 
+
 const onSubmitCreateLaw = (event, passedBy, description, title, departmentId, setFetchLaws) => {
     event.preventDefault()
     axios.post("http://localhost:9000/createLaw", { passedBy: passedBy, description: description, title: title, state: "Pending", departmentId: departmentId })
@@ -123,6 +124,7 @@ const onSubmitCreateLaw = (event, passedBy, description, title, departmentId, se
         alert(error.response.data)
     })
 }
+
 
 const getDepartmentHeaderLeft = (name, budget, isMyDepartment) => {
     //Get the current user role
@@ -180,6 +182,7 @@ const getDepartmentHeaderRight = (setContractFormOpen, contractFormOpen, setCrea
     }
 }
 
+
 function Department()
 {
     const [isMyDepartment, setIsMyDepartment] = useState(false);
@@ -196,14 +199,86 @@ function Department()
     
     const [laws, setLaws] = useState([])
     const [fetchLaws, setFetchLaws] = useState(true)
+
+    const [contractDesc, setContractDesc] = useState("");
+    const [Budget,setBudget] = useState(0);
+
+    const [contracts, setContracts] = useState([])
     
     const navigate = useNavigate();
     
     const user = localStorage.getItem('user_id');
+    const company = localStorage.getItem('company_id');
+    console.log(user,company)
+
+    const onSubmitContract = async (event) => {
+        event.preventDefault();
+    
+        const contract = {
+            companyID: company,
+            status: "Pending",
+            departmentID: currentDepartment._id,
+            description: contractDesc,
+            budget: Budget
+        };
+    
+        try {
+            if (Budget <= currentDepartment.budget) {
+                // Post the contract
+                const res = await axios.post("http://localhost:9000/createContract", contract);
+                console.log(res.data);
+    
+                // Update the department budget
+                const updatedBudget = currentDepartment.budget - Budget;
+                const departmentRes = await axios.put(`http://localhost:9000/updateDepartmentBudget/${currentDepartment._id}`, { budget: updatedBudget });
+    
+                setCurrentDepartment(departmentRes.data)
+                // Department budget updated successfully
+    
+                // Contract was created, now handle the result or perform additional actions
+                alert("Contract Posted");
+                setContractFormOpen(!contractFormOpen);
+            } else {
+                alert("Budget exceeding Overall Department Budget");
+            }
+        } catch (error) {
+            console.log(error);
+            alert(error.response ? error.response.data : "Error posting contract");
+        }
+    };
+    
+
+    const getPendingContractCard = (Contract) => {
+        if (Contract.status === "Pending") {
+            return (
+                <li className="card-text text-start" id={Contract._id}>
+                    {Contract.description}
+                    {company && (
+                        <>
+                            <Link to={`/ApplyContract/${Contract._id}`}>Apply here</Link>
+                            <br />
+                        </>
+                    )}
+                </li>
+            );
+        }
+    }
+    const getAssignedContractCard = (Contract)=>
+    {
+        if(Contract.status === "Assigned") {
+            return (
+                <li className="card-text text-start" id={Contract._id}>
+                    
+                    {Contract.description}<br/>
+                    
+                </li>
+            );
+        }
+    }
 
     useEffect(() => {
         // Check That the user is signed in
-        if(Object.is(user, null)) {
+        if(Object.is(user, null) && Object.is(company,null) ){
           alert("Please Login to View Departments!");
           navigate('/login');
         }
@@ -239,10 +314,25 @@ function Department()
             })
             setFetchLaws(false);
         }
+        
 
     })
-
-    if (!user) {
+    useEffect(()=>
+    {
+         axios.get("http://localhost:9000/getContracts",{params : {departmentID : currentDepartment._id}})
+         .then((res)=>
+         {
+            setContracts(res.data)
+         }
+         )
+         .catch((err)=>
+         {
+            console.log(err)
+         }
+         )
+    },[]
+    )
+    if (!user && !company) {
         return null;
     }
 
@@ -271,17 +361,17 @@ function Department()
                         <form className="form">
                         
                             <div className="form-group">
-                                <textarea className="form-control" id="UserStory"  placeholder="Enter contract desc" 
+                                <textarea className="form-control" id="UserStory"  placeholder="Enter contract desc" onChange={(event) => setContractDesc(event.target.value)}
                                 required/>
                             </div>
                             
                             <div className="form-group">
-                                <input type="number" id="Priority" className="form-control" placeholder="Enter budget"  
+                                <input type="number" id="Priority" className="form-control" placeholder="Enter budget"  onChange={(event) => setBudget(event.target.value)}
                                 required/> 
                             </div>
                             <div>
                                 <button type="submit" className="dislike-button btn btn-warning" onClick={() => setContractFormOpen(!contractFormOpen)}>Cancel</button>           
-                                <button type="submit" className="like-button btn btn-primary" >Submit</button>
+                                <button type="submit" className="like-button btn btn-primary" onClick={onSubmitContract} >Submit</button>
                             </div>
                         </form>
                     </div>
@@ -344,9 +434,10 @@ function Department()
                                     <div className='card-title '><h5>New Contracts</h5>  </div>
                                     
                                         <ul className="custom-list">
-                                            <li className="card-text text-start">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam <a href="/ApplyContract">Apply Here</a></li>
-
-                                            <li className="card-text text-start">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam <a href="/ApplyContract">Apply Here</a></li>
+                                            {
+                                                contracts.map((Contract) => getPendingContractCard(Contract))
+                                            }
+                                            
                                         </ul>
                                 </div>
                             </div>
@@ -357,24 +448,14 @@ function Department()
                                     <div className='card-title '><h5>List of Contracts</h5>  </div>
                                     
                                         <ul className="custom-list">
-                                            <li className="card-text text-start">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam</li>
-                                            <li className="card-text text-start">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam</li>
-                                        </ul>
+                                            {
+                                                contracts.map((Contract) => getAssignedContractCard(Contract))
+                                            }
+                                         </ul>
                                 </div>
                             </div>
                         </div>
-                        <div className="row  text-center" >
-                            <div className="card">
-                                <div className="card-body">
-                                    <div className='card-title '><h5>List of Job Vacancies</h5>  </div>
-                                    
-                                        <ul className="custom-list">
-                                            <li className="card-text text-start">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam</li>
-                                            <li className="card-text text-start">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam</li>
-                                        </ul>
-                                </div>
-                            </div>
-                        </div>
+                        
                         <div className="row  text-center" >
                             <div className="card">
                                 <div className="card-body">

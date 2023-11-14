@@ -19,6 +19,10 @@ const Employee = require('./Schema/Employee.js')
 const Feedback = require('./Schema/FeedbackSchema.jsx');
 const Complaint = require('./Schema/ComplaintSchema.jsx');
 const LawVotes = require('./Schema/LawVotesSchema.jsx');
+const Company = require('./Schema/CompanySignup.js');
+const Contract = require('./Schema/ContractSchema.jsx');
+const ContractRequest = require('./Schema/ContractRequest.js')
+
 
 
 const app = express();
@@ -671,6 +675,7 @@ app.post('/postMayorVotes', async (req, res) => {
     res.send(votes);
 })
 
+
 app.post('/createEmployee', async (req, res) => {
     try {
         const emp = new Employee(req.body);
@@ -712,6 +717,138 @@ app.post('/postComplaint', async (req, res) => {
     }
 })
 
+app.post('/createCompany',async(req,res)=>{
+    const company = new Company(req.body);
+    console.log(company)
+    try{
+        await company.save();
+        console.log("company signed up")
+        res.send(company);
+    }
+    catch(error){
+        res.status(500).send(error);
+    }
+}
+)
+
+app.post("/logincompany", async (req, res) => {
+    //console.log(" username and password to look for are ", req.query.username, req.query.password);
+    const email = req.body.email;
+    const password = req.body.password;
+    console.log(email,password);
+    try {
+        const user = await Company.findOne({ email, password });
+        console.log(user);
+        if(user)
+        res.send(user);
+        else
+        res.status(500).send(error);
+    }
+    catch (error) {
+        res.status(500).send(error);
+    }
+});
+app.post("/createContract",async(req,res)=>
+{
+    const contract = new Contract(req.body)
+    console.log(contract)
+    try{
+        await contract.save();
+        console.log("company signed up")  
+        res.send(contract);
+    }
+    catch(error){
+        res.status(500).send(error);
+    }
+
+}
+)
+app.put('/updateDepartmentBudget/:departmentId', async (req, res) => {
+    const departmentId = req.params.departmentId;
+    const { budget } = req.body;
+  
+    try {
+      // Find the department by ID and update the budget
+      const updatedDepartment = await Department.findByIdAndUpdate(departmentId, { budget }, { new: true });
+  
+      // Respond with the updated department
+      console.log(updatedDepartment);
+      res.send(updatedDepartment)
+      
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Internal Server Error');
+    }
+  });
+
+  app.get("/getContracts", async (req, res) => {
+    try {
+
+        const departmentID = req.query.departmentID;
+        const contracts = await Contract.find({ departmentID: departmentID });
+        console.log(contracts)
+        res.send(contracts);
+    }
+    catch (error) {
+        res.status(500).send(error);
+    }
+})
+app.get("/getContractsAll", async (req, res) => {
+    try {
+
+        
+        const contracts = await Contract.find();
+        console.log(contracts)
+        res.send(contracts);
+    }
+    catch (error) {
+        res.status(500).send(error);
+    }
+})
+
+app.post("/contractRequest",async(req,res)=>
+{
+    const contractreq = new ContractRequest(req.body)
+    console.log(contractreq)
+    try{
+        await contractreq.save();
+       
+        res.send(contractreq);
+    }
+    catch(error){
+        res.status(500).send(error);
+    }
+})
+app.get("/getcontractreqs",async(req,res)=>
+{
+    try {
+
+        
+        const contractreqs = await Contract.find();
+        console.log(contractreqs)
+        res.send(contractreqs);
+    }
+    catch (error) {
+        res.status(500).send(error);
+    }
+}
+)
+
+app.get("/getcompanies",async(req,res)=>
+{
+    try {
+
+        
+        const companies = await Contract.find();
+        console.log(companies)
+        res.send(companies);
+    }
+    catch (error) {
+        res.status(500).send(error);
+    }
+}
+)
+  
 const mongostring = "mongodb+srv://delegateAdmin:test12345@delegatecluster.rcuipff.mongodb.net/";
 mongoose.connect(mongostring);
 const database = mongoose.connection;

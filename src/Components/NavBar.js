@@ -7,7 +7,7 @@ import axios from 'axios'
 const getLoginOptions = () => {
   //localStorage.getItem("user_id")
   //if there is no current User logged in to the system, render in all the login/create account options
-  if(Object.is(localStorage.getItem("user_id"), null)) {
+  if(Object.is(localStorage.getItem("user_id"),null) || Object.is(localStorage.getItem("company_id"),null)) {
     return (
         <ul className="navbar-nav ml-auto">
           <li class="nav-item">
@@ -29,7 +29,11 @@ const getLoginOptions = () => {
         <li class="nav-item">
           <a class="nav-link" href="/" style={{color : 'white'}} onClick={() => {
             localStorage.removeItem("user_id");
-          }}>Logout</a>
+            localStorage.removeItem("company_id")
+          }}
+          
+          >Logout</a>
+          {console.log(!Object.is(localStorage.getItem('user_id')),localStorage.getItem('company_id'))}
         </li>
       </ul>
     )
@@ -97,10 +101,12 @@ function NavBar() {
                     return <li><a class="dropdown-item" href="/Department" onClick={(event) => {
                       // Check That the user is signed in
                       const user = localStorage.getItem('user_id');
-                      if(!Object.is(user, null)) {
+                      const company = localStorage.getItem('com[any_id')
+                      if(!Object.is(user, null)|| !Object.is(company,null)) {
                         localStorage.removeItem('currentDepartment')
                         localStorage.setItem('currentDepartment', JSON.stringify(department))
                       }
+
                     }}>{department.name}</a></li>;
                   })
                 }
