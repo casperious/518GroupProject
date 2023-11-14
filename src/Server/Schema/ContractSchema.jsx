@@ -4,7 +4,7 @@ const ContractSchema = new mongoose.Schema({
 
     companyID: mongoose.Schema.Types.ObjectId,
     name: String,
-    status: { Assigned: "Assigned", Pending: "Pending" },
+    status: String,
     departmentID: mongoose.Schema.Types.ObjectId,
     budget: Number,
     description: String,
