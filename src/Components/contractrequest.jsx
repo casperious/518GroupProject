@@ -1,21 +1,52 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.css'; // Import Bootstrap CSS
 import '../index.css';
 import NavBar from './NavBar';
 import Footer from './footer';
+import axios from 'axios';
 
 function ContractRequest() {
     // Define the number of sections, for example, 5 sections
-    let n=4;
-
-    const [formOpen, setFormOpen] = useState(Array(n).fill(false));
-
-    const toggleForm = (index) => {
-        const updatedFormOpen = [...formOpen];
-        updatedFormOpen[index] = !updatedFormOpen[index];
-        setFormOpen(updatedFormOpen);
-    };
-
+    const [contracts, setContracts] = useState([])
+    const [contractreqs, setContractreqs] = useState([])
+    const [companies, setCompanies] = useState([])
+    useEffect(() => {
+        // Fetch contract details based on the contract ID
+        axios.get('http://localhost:9000/getCompanies')
+            .then((res) => {
+                setCompanies(res.data)
+                
+            })
+            .catch((error) => {
+                console.error('Error fetching contract details:', error);
+            });
+    }, []);
+    useEffect(() => {
+        // Fetch contract details based on the contract ID
+        axios.get('http://localhost:9000/getContractsAll')
+            .then((res) => {
+                setContracts(res.data)
+                
+            })
+            .catch((error) => {
+                console.error('Error fetching contract details:', error);
+            });
+    }, []);
+    useEffect(() => {
+        // Fetch contract details based on the contract ID
+        axios.get('http://localhost:9000/getContractreqs')
+            .then((res) => {
+                setContractreqs(res.data)
+                
+            })
+            .catch((error) => {
+                console.error('Error fetching contract details:', error);
+            });
+    }, []);
+    console.log("***",companies)
+    console.log("***",contractreqs)
+    console.log("****",contracts)
+    
     return (
         <div>
             <NavBar />
@@ -27,28 +58,22 @@ function ContractRequest() {
                                 <h4>Contract desc</h4>
                                 <div className='card-title '>
 
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam
+                                   
                                 </div>
-                                {Array(n).fill(null).map((_, index) => (
-                                    <div className='subnav' key={index}>
-                                        <h5>Company Name</h5>
+                                
+                                    <div className='subnav' >
+                                        <h5> </h5>
+                                        
                                         <button
                                             type="submit"
                                             className="dislike-button btn btn-primary"
-                                            onClick={() => toggleForm(index)}
+                                            
                                         >
-                                            Preview
+                                            Assign
                                         </button>
-                                        {formOpen[index] && (
-                                            <div>
-                                                <h5>Company Details :</h5>
-                                                Company Bidding Amount : $xxxxx <br />
-                                                Company Sponsered : True<br/>
-                                                <button className='btn btn-success'>Assign</button>
-                                            </div>
-                                        )}
+                                        
                                     </div>
-                                ))}
+                               
                             </div>
                         </div>
                     </div>
@@ -59,29 +84,20 @@ function ContractRequest() {
                             <div className="card-body">
                             <h4>Contract desc</h4>
                                 <div className='card-title '>
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam
                                 </div>
-                                {Array(n).fill(null).map((_, index) => (
-                                    <div className='subnav' key={index}>
+                                
+                                    <div className='subnav' >
                                         <h5>Company Name</h5>
                                         <button
                                             type="submit"
                                             className="dislike-button btn btn-primary"
-                                            onClick={() => toggleForm(index)}
+                                            
                                         >
-                                            Preview
+                                           Assign
                                         </button>
-                                        {formOpen[index] && (
-                                            <div>
-                                                <h5>Company Details :</h5>
-                                                Company Bidding Amount: $xxxxx <br />
-                                                Company Sponsored: True
-                                                <br />
-                                                <button className='btn btn-success'>Assign</button> 
-                                            </div>
-                                        )}
+                                        
                                     </div>
-                                ))}
+                               
 
                             </div>
                         </div>

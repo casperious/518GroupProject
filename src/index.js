@@ -24,6 +24,7 @@ import CreateDepartment from './Components/CreateDepartment';
 import CreateCityOfficial from './Components/CreateCityOfficial';
 import DepartmentControl from './Components/DepartmentControl';
 import Footer from './Components/footer';
+import Companylogin from './Components/Companylogin';
 
 
 const router = createBrowserRouter(
@@ -31,7 +32,7 @@ const router = createBrowserRouter(
     <>
       <Route path='/' element={<Home />} />
       <Route path='/contractrequest' element={<ContractRequest />} />
-      <Route path='/ApplyContract' element={<ApplyContract />} />
+      <Route path="/ApplyContract/:contractId" element={<ApplyContract />} />
       <Route path='/viewmore' element={<ViewMore />} />
       <Route path='/Department' element={<Department />} />
       <Route path='/signUpCompany' element={<SignUpCompany />} />
@@ -47,7 +48,8 @@ const router = createBrowserRouter(
       <Route path='/CreateDepartment' element={<CreateDepartment />}></Route>
       <Route path='/CreateCityOfficial' element={<CreateCityOfficial />}></Route>
       <Route path='/DepartmentControl/:department_id' element={<DepartmentControl />}></Route>
-    </>
+      <Route path='/Companylogin' element = {<Companylogin />}></Route>
+    </> 
   )
 )
 
