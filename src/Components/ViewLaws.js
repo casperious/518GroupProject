@@ -6,61 +6,112 @@ import axios from "axios";
 import NavBar from "./NavBar";
 import Footer from "./footer";
 
-const renderLaw = (law, user_id) => {
+const renderLaw = (law, user_id, setFetchLaws) => {
   // If user hasn't voted on the law already, render the vote buttons
+  const role = localStorage.getItem('role');
+  const validRole = (role === "Citizen" || role === "Employee") 
+  const alreadyVoted = law.vote_history.userID.indexOf(user_id) !== -1
   const lawCardTitle = `(${law.department.name}) ${law.title}`
-  if(law.state === "Pending" && (law.vote_history.userID.indexOf(user_id) === -1)) {
+  if (law.state === "Pending" && validRole && !alreadyVoted) {
     return (
       <div>
         <h4>{lawCardTitle}</h4>
         <p>{law.description}</p>
         <div className="btn-container">
-          <button className="btn btn-outline-primary" onClick={(event) => {onVoteYay(event, law)}} data-key="YAY" value={law._id}> YAY {law.vote_history.yesCount} </button>
-          <button className="btn btn-outline-danger" onClick={(event) => {onVoteNay(event, law)}} data-key="NAY" value={law._id}> NAY {law.vote_history.noCount} </button>
+          <button className="like-button btn btn-success" onClick={(event) => {onVoteYay(event, user_id, law, setFetchLaws)}} data-key="YAY" value={law._id}> YAY {law.vote_history.yesCount} </button>
+          <button className="dislike-button btn btn-danger" onClick={(event) => {onVoteNay(event, user_id, law, setFetchLaws)}} data-key="NAY" value={law._id}> NAY {law.vote_history.noCount} </button>
         </div><br/>
       </div>
     );
   }
-  else if (law.state === "Pending" && (law.vote_history.userID.indexOf(user_id) !== -1)){
+  else if (law.state === "Pending" && validRole && alreadyVoted){
     return (
       <div>
         <h4>{lawCardTitle}</h4>
         <p>{law.description}</p>
-        <p>Vote Submitted</p><br/>
           <button 
-            className="btn btn-outline-primary" 
-            onClick={(event) => {onVoteYay(event, law)}} 
+            className="like-button btn btn-success" 
+            onClick={(event) => {onVoteYay(event, user_id, law, setFetchLaws)}} 
             data-key="YAY" 
             value={law._id}
             disabled
             > YAY {law.vote_history.yesCount} </button>
           <button 
-            className="btn btn-outline-danger" 
-            onClick={(event) => {onVoteNay(event, law)}} 
+            className="dislike-button btn btn-danger" 
+            onClick={(event) => {onVoteNay(event, user_id, law, setFetchLaws)}} 
             data-key="NAY" 
             value={law._id}
             disabled
             > NAY {law.vote_history.noCount} </button>
+          <p>(Vote Submitted)</p><br/>
       </div>
     );
   }
-  else if (law.state === "Active"){
+  else if (law.state === "Pending" && !validRole){
     return (
       <div>
         <h4>{lawCardTitle}</h4>
         <p>{law.description}</p>
-        <p>Voting is closed</p><br/>
+          <button 
+            className="like-button btn btn-success" 
+            onClick={(event) => {onVoteYay(event, user_id, law, setFetchLaws)}} 
+            data-key="YAY" 
+            value={law._id}
+            disabled
+            > YAY {law.vote_history.yesCount} </button>
+          <button 
+            className="dislike-button btn btn-danger" 
+            onClick={(event) => {onVoteNay(event, user_id, law, setFetchLaws)}} 
+            data-key="NAY" 
+            value={law._id}
+            disabled
+            > NAY {law.vote_history.noCount} </button>
+          <p>(Please sign into your Citizen or Employee account to access voting privileges)</p><br/>
+      </div>
+    );
+  }
+  else if (law.state === "Active"){
+    const msg = `Voting is closed (${law.vote_history.yesCount} YAY - ${law.vote_history.noCount} NAY)`
+    return (
+      <div>
+        <h4>{lawCardTitle}</h4>
+        <p>{law.description}</p>
+        <p>{msg}</p><br/>
       </div>
     );
   }
 }
 
-const onVoteYay = (event, law) => {
-  // TODO
+const onVoteYay = (event, user_id, law, setFetchLaws) => {
+  event.preventDefault();
+  axios.patch("http://localhost:9000/addYesVoteForLawVoteId", { user_id: user_id, law_vote: law.vote_history })
+  .then((res) => {
+      if(res.data) {
+          console.log(res.data)
+          alert(`Successfully voted YAY on ${law.title}`)
+          setFetchLaws(true)
+      }
+  })
+  .catch((err) => {
+      console.log(err)
+      alert(`Server Error Occured when casting vote`)
+  })
 }
 
-const onVoteNay = (event, law) => {
-  // TODO
+const onVoteNay = (event, user_id, law, setFetchLaws) => {
+  event.preventDefault();
+  axios.patch("http://localhost:9000/addNoVoteForLawVoteId", { user_id: user_id, law_vote: law.vote_history })
+  .then((res) => {
+      if(res.data) {
+          console.log(res.data)
+          alert(`Successfully voted NAY on ${law.title}`)
+          setFetchLaws(true)
+      }
+  })
+  .catch((err) => {
+      console.log(err)
+      alert(`Server Error Occured when casting vote`)
+  })
 }
 
 function ViewLaws(props) {
@@ -97,7 +148,7 @@ function ViewLaws(props) {
       }
     }
 
-  }, [user, alertShown, navigate]);
+  });
 
 
   if (!user) {
@@ -111,7 +162,7 @@ function ViewLaws(props) {
         <div className="row justify-content-center align-items-center lcontainer">
           <form className="col-6">
             <h2 id="ttle">Laws</h2> <br />
-            {laws.map((law) => renderLaw(law, user))}
+            {laws.map((law) => renderLaw(law, user, setFetchLaws))}
             <br />
           </form>
         </div>

@@ -1,13 +1,15 @@
 const mongoose = require('../utils/mongoDB');
 
 const ContractSchema = new mongoose.Schema({
-    
-   
-    status: String,
+
+    companyID: mongoose.Schema.Types.ObjectId,
+    name: String,
+    status: { Assigned: "Assigned", Pending: "Pending" },
     departmentID: mongoose.Schema.Types.ObjectId,
     budget: Number,
-    description: String
-   
+    description: String,
+    duration: Date,
+    supervisor: mongoose.Schema.Types.ObjectId,
 });
 
 const Contract = mongoose.model("Contract", ContractSchema);
