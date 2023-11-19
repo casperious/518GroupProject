@@ -107,7 +107,32 @@ function VoteMayor(props) {
         <div className="row justify-content-center align-items-center lcontainer team-list">
           <h4 id="ttle">Vote Mayor</h4> <br /> <br />
           {voted != "No" ? (
-            <h4>You have already voted</h4>
+            <>
+              <h4>You have already voted</h4>
+              <h5>Candidates and Policies</h5>
+              <table className="table table-striped table-bordered table-hover">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Policies</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {candidates.map((candidate) => (
+                    <tr key={candidate._id}>
+                      <td>{candidate.firstName} {candidate.lastName}<br></br>{candidate.sponsors[0]}</td>
+                      <td><Popup trigger={<button> Policies</button>} position="right center" modal nested>
+                        {
+                          candidate.policies.map((policy) => (
+                            <div>{policy}</div>
+                          ))
+                        }
+                      </Popup></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </>
           ) : (
             <>
               <table className="table table-striped table-bordered table-hover">
