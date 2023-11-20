@@ -21,7 +21,8 @@ const Complaint = require('./Schema/ComplaintSchema.jsx');
 const LawVotes = require('./Schema/LawVotesSchema.jsx');
 const Company = require('./Schema/CompanySignup.js');
 const Contract = require('./Schema/ContractSchema.jsx');
-const ContractRequest = require('./Schema/ContractRequest.js')
+const ContractRequest = require('./Schema/ContractRequest.js');
+const Mayor = require('./Schema/MayorSchema.jsx');
 
 
 
@@ -47,7 +48,7 @@ app.get("/", (req, res) => {
 // Add Automated Jobs / Scheduled Jobs here
 const updateLawState = async (law_id) => {
     try {
-        await Law.findOne({ _id: law_id}).then(async (law) => {
+        await Law.findOne({ _id: law_id }).then(async (law) => {
             //Get the vote history for that law
             await LawVotes.findOne({ lawID: law_id }).then(async (voting_history) => {
                 var newState = ""
@@ -69,7 +70,7 @@ const updateLawState = async (law_id) => {
                         state: newState,
                     }
                 }
-                
+
                 //Update Law
                 await Law.updateOne(query, updateDoc).then(async (result) => {
                     console.log(result);
@@ -77,7 +78,7 @@ const updateLawState = async (law_id) => {
             })
         })
     }
-    catch (err){
+    catch (err) {
         console.log(err)
     }
 }
@@ -86,7 +87,7 @@ const updateLawState = async (law_id) => {
 
 app.patch("/updateLawStatusForLawId", async (req, res) => {
     console.log(`updateLawStatusForLawId: law_id: ${req.body.law_id}`)
-    
+
 })
 
 app.patch("/addYesVoteForLawVoteId", async (req, res) => {
@@ -103,7 +104,7 @@ app.patch("/addYesVoteForLawVoteId", async (req, res) => {
     const newUserList = req.body.law_vote.userID
     newUserList.push(req.body.user_id)
     const updateDoc = {
-        $set : {
+        $set: {
             yesCount: newCount,
             userID: newUserList
         }
@@ -135,7 +136,7 @@ app.patch("/addNoVoteForLawVoteId", async (req, res) => {
     const newUserList = req.body.law_vote.userID
     newUserList.push(req.body.user_id)
     const updateDoc = {
-        $set : {
+        $set: {
             noCount: newCount,
             userID: newUserList
         }
@@ -262,7 +263,7 @@ app.get("/getLawsForDepartmentId", (req, res) => {
         Law.find({ departmentId: req.query.departmentId }).then(async (laws) => {
             console.log(laws)
             // Attach the law votes for convience
-            for(const law of laws) {
+            for (const law of laws) {
                 // Only get laws that passed or are currently being voted on
                 if (law.state === "Pending" || law.state === "Active") {
                     //Get the vote for that law - Only return the _id, userID array, yesCount, and noCount for the vote record
@@ -286,6 +287,91 @@ app.get("/getLawsForDepartmentId", (req, res) => {
     catch (error) {
         console.log("getLawsForDepartmentId: Error")
         res.status(500).send(err);
+    }
+})
+
+app.get('/getLawsForMayor', async (req, res) => {
+    try {
+        let newDate = new Date();
+        const currentMayor = [];
+        //console.log(newDate);
+        const mayors = await Mayor.find();
+        //console.log(mayors);
+        for (const mayor of mayors) {
+            if (newDate < mayor.endDate && newDate > mayor.dateAppointed) {
+                //console.log("within range");
+                currentMayor.push(mayor);
+
+                break;
+            }
+        }
+        const laws = await Law.find({ passedBy: currentMayor[0]._id });
+        res.send(laws);
+    }
+    catch (error) {
+        res.status(500).send(error);
+    }
+})
+
+app.get('/getMayorSponsors', async (req, res) => {
+    try {
+        let newDate = new Date();
+        const currentMayor = [];
+        //console.log(newDate);
+        const mayors = await Mayor.find();
+        const sponsors = [];
+        //console.log(mayors);
+        for (const mayor of mayors) {
+            if (newDate < mayor.endDate && newDate > mayor.dateAppointed) {
+                //console.log("within range");
+                currentMayor.push(mayor);
+                for (const sponsor of mayor.sponsors) {
+                    //console.log("sponsor is ", sponsor);
+                    const company = await Company.find({ _id: sponsor });
+                    sponsors.push(company[0]);
+                }
+                break;
+            }
+        }
+        //console.log(sponsors);
+        res.send(sponsors);
+    }
+    catch (error) {
+        res.status(500).send(error);
+    }
+})
+
+app.get('/getMayorDetails', async (req, res) => {
+    try {
+        let newDate = new Date();
+        const currentMayor = [];
+        //console.log(newDate);
+        const mayors = await Mayor.find();
+        //console.log(mayors);
+        for (const mayor of mayors) {
+            if (newDate < mayor.endDate && newDate > mayor.dateAppointed) {
+                //console.log("within range");
+                currentMayor.push(mayor);
+                break;
+            }
+        }
+        const userDetails = await User.find({ _id: currentMayor[0].userId });
+        //console.log(userDetails)
+        const obj = new Object({
+            user_id: userDetails[0]._id,
+            dateAppointed: currentMayor[0].dateAppointed,
+            endDate: currentMayor[0].endDate,
+            budget: currentMayor[0].budget,
+            sponsors: currentMayor[0].sponsors,
+            firstName: userDetails[0].firstName,
+            lastName: userDetails[0].lastName,
+            email: userDetails[0].emailId
+        })
+        //console.log(obj);
+        res.send(obj);
+    }
+    catch (error) {
+        res.status(500).send(error);
     }
 })
 
@@ -717,15 +803,15 @@ app.post('/postComplaint', async (req, res) => {
     }
 })
 
-app.post('/createCompany',async(req,res)=>{
+app.post('/createCompany', async (req, res) => {
     const company = new Company(req.body);
     console.log(company)
-    try{
+    try {
         await company.save();
         console.log("company signed up")
         res.send(company);
     }
-    catch(error){
+    catch (error) {
         res.status(500).send(error);
     }
 }
@@ -735,29 +821,28 @@ app.post("/logincompany", async (req, res) => {
     //console.log(" username and password to look for are ", req.query.username, req.query.password);
     const email = req.body.email;
     const password = req.body.password;
-    console.log(email,password);
+    console.log(email, password);
     try {
         const user = await Company.findOne({ email, password });
         console.log(user);
-        if(user)
-        res.send(user);
+        if (user)
+            res.send(user);
         else
-        res.status(500).send(error);
+            res.status(500).send(error);
     }
     catch (error) {
         res.status(500).send(error);
     }
 });
-app.post("/createContract",async(req,res)=>
-{
+app.post("/createContract", async (req, res) => {
     const contract = new Contract(req.body)
     console.log(contract)
-    try{
+    try {
         await contract.save();
-        console.log("company signed up")  
+        console.log("company signed up")
         res.send(contract);
     }
-    catch(error){
+    catch (error) {
         res.status(500).send(error);
     }
 
@@ -766,22 +851,22 @@ app.post("/createContract",async(req,res)=>
 app.put('/updateDepartmentBudget/:departmentId', async (req, res) => {
     const departmentId = req.params.departmentId;
     const { budget } = req.body;
-  
-    try {
-      // Find the department by ID and update the budget
-      const updatedDepartment = await Department.findByIdAndUpdate(departmentId, { budget }, { new: true });
-  
-      // Respond with the updated department
-      console.log(updatedDepartment);
-      res.send(updatedDepartment)
-      
-    } catch (error) {
-      console.error(error);
-      res.status(500).send('Internal Server Error');
-    }
-  });
 
-  app.get("/getContracts", async (req, res) => {
+    try {
+        // Find the department by ID and update the budget
+        const updatedDepartment = await Department.findByIdAndUpdate(departmentId, { budget }, { new: true });
+
+        // Respond with the updated department
+        console.log(updatedDepartment);
+        res.send(updatedDepartment)
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+app.get("/getContracts", async (req, res) => {
     try {
 
         const departmentID = req.query.departmentID;
@@ -796,7 +881,7 @@ app.put('/updateDepartmentBudget/:departmentId', async (req, res) => {
 app.get("/getContractsAll", async (req, res) => {
     try {
 
-        
+
         const contracts = await Contract.find();
         console.log(contracts)
         res.send(contracts);
@@ -806,24 +891,22 @@ app.get("/getContractsAll", async (req, res) => {
     }
 })
 
-app.post("/contractRequest",async(req,res)=>
-{
+app.post("/contractRequest", async (req, res) => {
     const contractreq = new ContractRequest(req.body)
     console.log(contractreq)
-    try{
+    try {
         await contractreq.save();
-       
+
         res.send(contractreq);
     }
-    catch(error){
+    catch (error) {
         res.status(500).send(error);
     }
 })
-app.get("/getcontractreqs",async(req,res)=>
-{
+app.get("/getcontractreqs", async (req, res) => {
     try {
 
-        
+
         const contractreqs = await Contract.find();
         console.log(contractreqs)
         res.send(contractreqs);
@@ -834,11 +917,10 @@ app.get("/getcontractreqs",async(req,res)=>
 }
 )
 
-app.get("/getcompanies",async(req,res)=>
-{
+app.get("/getcompanies", async (req, res) => {
     try {
 
-        
+
         const companies = await Contract.find();
         console.log(companies)
         res.send(companies);
@@ -848,7 +930,7 @@ app.get("/getcompanies",async(req,res)=>
     }
 }
 )
-  
+
 const mongostring = "mongodb+srv://delegateAdmin:test12345@delegatecluster.rcuipff.mongodb.net/";
 mongoose.connect(mongostring);
 const database = mongoose.connection;
