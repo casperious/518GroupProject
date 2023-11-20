@@ -107,21 +107,30 @@ const getLawCard = (law, setFetchLaws) => {
 }
 
 
-const onSubmitCreateLaw = (event, passedBy, description, title, departmentId, setFetchLaws) => {
+const onSubmitCreateLaw = (event, description, title, departmentId, setFetchLaws) => {
     event.preventDefault()
-    axios.post("http://localhost:9000/createLaw", { passedBy: passedBy, description: description, title: title, state: "Pending", departmentId: departmentId })
-    .then((res1) => {
-        //console.log(res1.data);
-        // Law was created, noew create vote history
-        axios.post("http://localhost:9000/createLawVote", { userID: res1.data.passedBy, lawID: res1.data._id}).then((res) => {
-            //console.log(res.data);
-            alert("Law Created Successfully")
-            setFetchLaws(true);
-        }) 
+    axios.get('http://localhost:9000/getMayorDetails')
+    .then((mayor) => {
+        console.log(mayor.data)
+        axios.post("http://localhost:9000/createLaw", { passedBy: mayor.data.user_id, description: description, title: title, state: "Pending", departmentId: departmentId })
+        .then((res1) => {
+            //console.log(res1.data);
+            // Law was created, noew create vote history
+            axios.post("http://localhost:9000/createLawVote", { userID: res1.data.passedBy, lawID: res1.data._id}).then((res) => {
+                //console.log(res.data);
+                alert("Law Created Successfully")
+                setFetchLaws(true);
+            }) 
+        })
+        .catch((error) => {
+            console.log(error);
+            alert(error.response.data)
+        })
+
     })
-    .catch((error) => {
-        console.log(error);
-        alert(error.response.data)
+    .catch((err) => {
+        console.log(err);
+        alert(err)
     })
 }
 
@@ -403,7 +412,7 @@ function Department()
                                 }}>Cancel</button> 
 
                                 <button type="submit" className="like-button btn btn-primary" onClick={(event) => {
-                                    onSubmitCreateLaw(event, localStorage.getItem("user_id"), lawDescription, lawTitle, currentDepartment._id, setFetchLaws)
+                                    onSubmitCreateLaw(event, lawDescription, lawTitle, currentDepartment._id, setFetchLaws)
                                     setCreateLawFormOpen(!createLawFormOpen)
                                 }}>Submit</button>
                             </div>
