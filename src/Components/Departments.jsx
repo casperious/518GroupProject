@@ -111,7 +111,7 @@ const onSubmitCreateLaw = (event, description, title, departmentId, setFetchLaws
     event.preventDefault()
     axios.get('http://localhost:9000/getMayorDetails')
     .then((mayor) => {
-        console.log(mayor.data)
+        //console.log(mayor.data)
         axios.post("http://localhost:9000/createLaw", { passedBy: mayor.data.user_id, description: description, title: title, state: "Pending", departmentId: departmentId })
         .then((res1) => {
             //console.log(res1.data);
