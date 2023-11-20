@@ -30,11 +30,103 @@ const getLoginOptions = () => {
           <a class="nav-link" href="/" style={{color : 'white'}} onClick={() => {
             localStorage.removeItem("user_id");
             localStorage.removeItem("company_id");
+            localStorage.removeItem("role");
           }}
           >Logout</a>
           {console.log(!Object.is(localStorage.getItem('user_id')),localStorage.getItem('company_id'))}
         </li>
       </ul>
+    )
+  }
+}
+
+const getRoleBasedActionsDropDown = () => {
+  const role = localStorage.getItem('role')
+  if (role === "Citizen") {
+    return (
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="true" style={{color : 'white'}}>
+                Citizen
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="/voteMayor" >Vote Mayor</a></li>
+                <li><a class="dropdown-item" href="/viewLaws" >Vote Laws</a></li>
+                <li><a class="dropdown-item" href="/sendFeedback" >Feedback</a></li>
+                <li><a class="dropdown-item" href="/sendComplaint" >Complaint</a></li>
+              </ul>
+            </li>
+    );
+  }
+  else if (role === "Employee") {
+    return (
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="true" style={{color : 'white'}}>
+                Employee
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="/voteMayor" >Vote Mayor</a></li>
+                <li><a class="dropdown-item" href="/viewLaws" >Vote Laws</a></li>
+                <li><a class="dropdown-item" href="/sendFeedback" >TODO: View Feedback?</a></li>
+                <li><a class="dropdown-item" href="/sendComplaint" >TODO: View Complaints?</a></li>
+              </ul>
+            </li>
+      );
+  }
+  else if (role === "company") {
+    return (
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="true" style={{color : 'white'}}>
+                Company
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="/sendFeedback" >TODO: View Contracts?</a></li>
+                <li><a class="dropdown-item" href="/sendComplaint" >TODO: Sponsor Candidates?</a></li>
+              </ul>
+            </li>
+      );
+  }
+  else if (role === "City Official") {
+    return (
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="true" style={{color : 'white'}}>
+                City Official
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="/">TODO: View Feedback</a></li>
+                <li><a class="dropdown-item" href="/sendComplaint">TODO: View Complaint</a></li>
+                <li><a class="dropdown-item" href="/Cityofficialsdepartments" >Hire Employees?</a></li>
+              </ul>
+            </li>
+    );
+  }
+  else if (role === "Mayor") {
+    return (
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="true" style={{color : 'white'}}>
+                Mayor
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="/MayorHome">Home</a></li>
+                <li><a class="dropdown-item" href="/MayorDepartments">View Departments</a></li>
+                <li><a class="dropdown-item" href="/CreateDepartment">Create Departments</a></li>
+                <li><a class="dropdown-item" href="/CreateCityOfficial" >Promote Citizens</a></li>
+              </ul>
+            </li>
+      );
+  }
+  else {
+    return (
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="true" style={{color : 'white'}}>
+          Welcome!
+        </a>
+          <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="/voteMayor" >Vote Mayor</a></li>
+                <li><a class="dropdown-item" href="/viewLaws" >Vote Laws</a></li>
+                <li><a class="dropdown-item" href="/sendFeedback" >Feedback</a></li>
+                <li><a class="dropdown-item" href="/sendComplaint" >Complaint</a></li>
+          </ul>
+      </li>
     )
   }
 }
@@ -76,18 +168,7 @@ function NavBar() {
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="true" style={{color : 'white'}}>
-                Citizen
-              </a>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="/voteMayor" >Vote Mayor</a></li>
-                <li><a class="dropdown-item" href="/viewLaws" >Vote Laws</a></li>
-                <li><a class="dropdown-item" href="/sendFeedback" >Feedback</a></li>
-                <li><a class="dropdown-item" href="/sendComplaint" >Complaint</a></li>
-                <li><a class="dropdown-item" href="/Cityofficialsdepartments" >Cityofficials'departments</a></li>
-              </ul>
-            </li>
+            {getRoleBasedActionsDropDown()}
           </ul>
           <ul class="navbar-nav   mb-lg-0">
             <li class="nav-item dropdown">
