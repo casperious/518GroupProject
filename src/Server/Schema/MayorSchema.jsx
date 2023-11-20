@@ -5,6 +5,7 @@ const MayorSchema = new mongoose.Schema({
     endDate: Date,
     budget: Number,
     userId: mongoose.Schema.Types.ObjectId,
+    sponsors: [mongoose.Schema.Types.ObjectId],
 });
 
 const Mayor = mongoose.model("Mayor", MayorSchema);
