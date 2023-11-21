@@ -793,12 +793,25 @@ app.put('/updateDepartmentBudget/:departmentId', async (req, res) => {
         res.status(500).send(error);
     }
 })
+
+app.get("/getContractRequests", async(req,res)=>
+{
+    try{
+        const reqs = await ContractRequest.find()
+       
+        res.send(reqs)
+
+    }
+    catch (error) {
+        res.status(500).send(error);
+    }
+})
 app.get("/getContractsAll", async (req, res) => {
     try {
 
         
         const contracts = await Contract.find();
-        console.log(contracts)
+        //console.log(contracts)
         res.send(contracts);
     }
     catch (error) {
@@ -819,28 +832,15 @@ app.post("/contractRequest",async(req,res)=>
         res.status(500).send(error);
     }
 })
-app.get("/getcontractreqs",async(req,res)=>
-{
-    try {
 
-        
-        const contractreqs = await Contract.find();
-        console.log(contractreqs)
-        res.send(contractreqs);
-    }
-    catch (error) {
-        res.status(500).send(error);
-    }
-}
-)
 
 app.get("/getcompanies",async(req,res)=>
 {
     try {
 
         
-        const companies = await Contract.find();
-        console.log(companies)
+        const companies = await Company.find();
+        
         res.send(companies);
     }
     catch (error) {
@@ -848,6 +848,31 @@ app.get("/getcompanies",async(req,res)=>
     }
 }
 )
+
+app.patch('/assignCompany/:contract_id', async (req, res) => {
+    console.log("in assign company route");
+    const contractId = req.params.contract_id; // Correct parameter name
+    const { companyID, status } = req.body; // Destructure the correct fields
+    console.log("contractId:", contractId);
+    console.log("company_id:", companyID);
+    console.log("status:", status);
+    try {
+        const updatedcontract = await Contract.findByIdAndUpdate(
+            contractId,
+            { companyID, status }, // Use the correct field names
+            { new: true }
+        );
+        console.log(updatedcontract);
+        if (!updatedcontract) {
+            return res.status(404).json({ error: 'contract not found' });
+        }
+
+        res.json(updatedcontract);
+    } catch (error) {
+        res.status(500).send(error);
+    }
+});
+
   
 const mongostring = "mongodb+srv://delegateAdmin:test12345@delegatecluster.rcuipff.mongodb.net/";
 mongoose.connect(mongostring);

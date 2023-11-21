@@ -176,6 +176,12 @@ const getDepartmentHeaderRight = (setContractFormOpen, contractFormOpen, setCrea
     else {
         return (
             <>
+            {
+                localStorage.getItem('company_id') &&
+                <Link to = "/MyContracts" className="btn btn-primary active">
+                   My Contracts
+                </Link>
+            }
                 <h4>Welcome!</h4>
             </>
         )
@@ -204,6 +210,7 @@ function Department()
     const [Budget,setBudget] = useState(0);
 
     const [contracts, setContracts] = useState([])
+    const [reqs, setReqs] = useState([])
     
     const navigate = useNavigate();
     
@@ -238,6 +245,7 @@ function Department()
                 // Contract was created, now handle the result or perform additional actions
                 alert("Contract Posted");
                 setContractFormOpen(!contractFormOpen);
+                setContracts([...contracts, contract])
             } else {
                 alert("Budget exceeding Overall Department Budget");
             }
@@ -250,12 +258,18 @@ function Department()
 
     const getPendingContractCard = (Contract) => {
         if (Contract.status === "Pending") {
+            const companies = reqs.filter((con)=>con.contractId === Contract._id)
+            // console.log(companies)
+            // console.log(localStorage.getItem('company_id'))
+            const applied = companies.filter((comp)=>comp.companyId === localStorage.getItem('company_id'))
+            console.log(applied,Contract._id)
             return (
                 <li className="card-text text-start" id={Contract._id}>
                     {Contract.description}
-                    {company && (
+                   
+                    { applied.length === 0 && company && (
                         <>
-                            <Link to={`/ApplyContract/${Contract._id}`}>Apply here</Link>
+                            <Link to={`/ApplyContract/${Contract._id}`}>  Apply here</Link>
                             <br />
                         </>
                     )}
@@ -275,7 +289,20 @@ function Department()
             );
         }
     }
-
+    useEffect(() => {
+        // Fetch contract details based on the contract ID
+        axios.get('http://localhost:9000/getContractRequests')
+            .then((res) => {
+                console.log(res.data);
+                setReqs(res.data)
+               
+            })
+            .catch((error) => {
+                console.error('Error fetching contract details:', error);
+            });
+    }, []);
+    // console.log(reqs)
+    
     useEffect(() => {
         // Check That the user is signed in
         if(Object.is(user, null) && Object.is(company,null) ){

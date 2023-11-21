@@ -7,106 +7,123 @@ import axios from 'axios';
 
 function ContractRequest() {
     // Define the number of sections, for example, 5 sections
-    const [contracts, setContracts] = useState([])
-    const [contractreqs, setContractreqs] = useState([])
-    const [companies, setCompanies] = useState([])
+    const [contracts, setContracts] = useState([]);
+    const [contractreqs, setContractreqs] = useState([]);
+    const [companies, setCompanies] = useState([]);
+
     useEffect(() => {
-        // Fetch contract details based on the contract ID
+        // Fetch company details
         axios.get('http://localhost:9000/getCompanies')
             .then((res) => {
-                setCompanies(res.data)
-                
+                setCompanies(res.data);
             })
             .catch((error) => {
-                console.error('Error fetching contract details:', error);
+                console.error('Error fetching company details:', error);
             });
-    }, []);
-    useEffect(() => {
-        // Fetch contract details based on the contract ID
+
+        // Fetch all contracts
         axios.get('http://localhost:9000/getContractsAll')
             .then((res) => {
-                setContracts(res.data)
-                
+                setContracts(res.data);
             })
             .catch((error) => {
                 console.error('Error fetching contract details:', error);
             });
-    }, []);
-    useEffect(() => {
-        // Fetch contract details based on the contract ID
-        axios.get('http://localhost:9000/getContractreqs')
+
+        // Fetch contract requests
+        axios.get('http://localhost:9000/getContractRequests')
             .then((res) => {
-                setContractreqs(res.data)
-                
+                setContractreqs(res.data);
             })
             .catch((error) => {
-                console.error('Error fetching contract details:', error);
+                console.error('Error fetching contract requests:', error);
             });
     }, []);
-    console.log("***",companies)
-    console.log("***",contractreqs)
-    console.log("****",contracts)
+
+    const handleSubmit = async (e,company_id,contract_id) =>
+    {
+        e.preventDefault();
+        console.log(company_id,contract_id)
+        axios.patch(`http://localhost:9000/assignCompany/${contract_id}`, { companyID: company_id, status: "Assigned" })
+
+        .then((res) => {
+            
+            alert("Assigned COmpany");
+          })
+          .catch((error) => {
+            alert("Error updating in Assigning:", error);
+          });
+
+    }
+    console.log(contractreqs)
+    console.log(companies)
     
+
     return (
         <div>
             <NavBar />
             <div className='container'>
-                <div className="row row-style text-center">
-                    <div className="col-lg-9 offset-1">
-                        <div className="card">
-                            <div className="card-body">
-                                <h4>Contract desc</h4>
-                                <div className='card-title '>
-
-                                   
-                                </div>
-                                
-                                    <div className='subnav' >
-                                        <h5> </h5>
-                                        
-                                        <button
-                                            type="submit"
-                                            className="dislike-button btn btn-primary"
+                {contracts.map((c) => {
+                    if (c.status === "Pending") {
+                        return (
+                            <div key={c._id} className="row row-style text-center">
+                                <div className="col-lg-9 offset-1">
+                                    <div className="card">
+                                        <div className="card-body">
+                                            <div className='card-title '>
+                                                
+                                                {c.description}
+                                            </div>
                                             
-                                        >
-                                            Assign
-                                        </button>
-                                        
-                                    </div>
-                               
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div className="row row-style text-center">
-                    <div className="col-lg-9 offset-1">
-                        <div className="card">
-                            <div className="card-body">
-                            <h4>Contract desc</h4>
-                                <div className='card-title '>
-                                </div>
-                                
-                                    <div className='subnav' >
-                                        <h5>Company Name</h5>
-                                        <button
-                                            type="submit"
-                                            className="dislike-button btn btn-primary"
-                                            
-                                        >
-                                           Assign
-                                        </button>
-                                        
-                                    </div>
-                               
+                                            <div >
+                                                
+                                                    {contractreqs.map((cr, index) => {
+                                                         
+                                                        if (c._id === cr.contractId) {
+                                                            const matchingCompany = companies.find((com) => cr.companyId === com._id);
 
+                                                            return (
+                                                                <div key={cr._id} >
+                                                                    {matchingCompany && (
+                                                                        <>
+                                                                            {matchingCompany.name} {cr.bid}
+                                                                            
+                                                                            <button
+                                                                                type="submit"
+                                                                                className="dislike-button btn btn-primary"
+                                                                                onClick={(e)=>{handleSubmit(e,matchingCompany._id,cr.contractId)}}
+                                                                            >
+                                                                                Assign
+                                                                            </button>
+                                                                            <br />
+                                                                        </>
+                                                                    )}
+                                                                    
+                                                                </div>
+
+                                                            );
+                                                            
+                                                        }
+                                                        return null;
+
+                                                       
+                                                    })}
+                                                
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                </div>
+                        );
+                    }
+                    return null; // Return null for other cases
+                })}
             </div>
             <Footer />
         </div>
     );
+    
 }
 
 export default ContractRequest;

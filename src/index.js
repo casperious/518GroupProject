@@ -25,6 +25,7 @@ import CreateCityOfficial from './Components/CreateCityOfficial';
 import DepartmentControl from './Components/DepartmentControl';
 import Footer from './Components/footer';
 import Companylogin from './Components/Companylogin';
+import MyContracts from './Components/MyContracts';
 
 
 const router = createBrowserRouter(
@@ -49,6 +50,7 @@ const router = createBrowserRouter(
       <Route path='/CreateCityOfficial' element={<CreateCityOfficial />}></Route>
       <Route path='/DepartmentControl/:department_id' element={<DepartmentControl />}></Route>
       <Route path='/Companylogin' element = {<Companylogin />}></Route>
+      <Route path =  '/MyContracts' element = {<MyContracts />}> </Route>
     </> 
   )
 )

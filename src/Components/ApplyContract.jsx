@@ -3,12 +3,13 @@ import 'bootstrap/dist/css/bootstrap.css';
 
 import NavBar from './NavBar';
 import Footer from './footer';
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 function ApplyContract()
 {
     const { contractId } = useParams();
-    //const [contracts, setContracts] = useState([]);
+    const [contracts, setContracts] = useState([]);
+    const navigate = useNavigate();
     const [desc, setDesc] = useState("");
     const [bidding, setBidding] = useState(0)
     console.log(contractId)
@@ -22,6 +23,7 @@ function ApplyContract()
         axios.get(`http://localhost:9000/getContractsAll`)
             .then((res) => {
                 console.log(res.data);
+                setContracts(res.data)
                 const contract = getContractById(res.data, contractId);
                 console.log(contract)
                 if (contract) {
@@ -34,7 +36,8 @@ function ApplyContract()
                 console.error('Error fetching contract details:', error);
             });
     }, []);
-
+    
+    // console.log(applied+"**")
     const handlesubmit = async (event) =>
     {
         event.preventDefault()
@@ -49,6 +52,7 @@ function ApplyContract()
         {
             console.log(res.data)
             alert("Applied successfully")
+            navigate("/Department")
         }
         )
         .catch((error) => {

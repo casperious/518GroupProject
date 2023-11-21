@@ -114,6 +114,18 @@ code {
   margin-right: 10px; /* Adjust the value to control the space */
   margin-left: 10px;
 }
+.contract-item {
+  display: flex;
+  justify-content: space-between;
+}
+
+.description {
+  width: 70%; /* Adjust as needed */
+}
+
+.status {
+  width: 30%; /* Adjust as needed */
+}
 
 
 
