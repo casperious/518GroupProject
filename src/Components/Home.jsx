@@ -1,19 +1,66 @@
-import React from 'react';
+import { React, useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.css'; // Import Bootstrap CSS
 import '../index.css';
+import axios from 'axios'
 
 import Footer from './footer';
 import NavBar from './NavBar';
 
+const getHomePageBanner = (mayor) => {
+    const mayorText = `Current Mayor: ${mayor.firstName} ${mayor.lastName}`
+    return (
+        <div>
+            <h1 className="display-4">Delegate</h1>
+            <p className="lead">{mayorText}</p>
+        </div>
+    )
+}
+
 function Home() {
+    const [mayor, setMayor] = useState({})
+    const [fetchMayor, setFetchMayor] = useState(true)
+    const [electMayor, setElectMayor] = useState(true)
+
+    useEffect(() => {
+        if(electMayor) {
+            try {
+                axios.post("http://localhost:9000/promoteMayor", {})
+                .then((res) => {
+                    if(res.data) {
+                        console.log(res.data)
+                        // Mayor is elected now fetch the mayor
+                        if(fetchMayor) {
+                            try {
+                                axios.get("http://localhost:9000/getMayorDetails", {})
+                                .then((res) => {
+                                    if(res.data) {
+                                        console.log(res.data)
+                                        setMayor(res.data)
+                                    }
+                                })
+                                setFetchMayor(false)
+                            }
+                            catch(err) {
+                                console.log(err)
+                            }
+                        }
+                    }
+                })
+            }
+            catch(err){
+                console.log(err)
+            }
+            setElectMayor(false)
+        }
+    })
+
     return (
         <div>
            <NavBar /> 
             <div className="container-fluid">
                 <img src="/images/bg.jpg" alt="banner" className="image"  />
                 <div className="jumbotron mt-2 custom-jumbotron text-center banner_content">
-                    <h1 className="display-4">Delegate!!!</h1>
-                    <p className="lead">Mayor Name</p>
+                    {getHomePageBanner(mayor)}
                 </div>
             
 

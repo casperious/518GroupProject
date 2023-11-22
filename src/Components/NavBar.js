@@ -53,6 +53,7 @@ const getRoleBasedActionsDropDown = () => {
                 <li><a class="dropdown-item" href="/viewLaws" >Vote Laws</a></li>
                 <li><a class="dropdown-item" href="/sendFeedback" >Feedback</a></li>
                 <li><a class="dropdown-item" href="/sendComplaint" >Complaint</a></li>
+                <li><a class="dropdown-item" href="/RegisterCandidate" >Register as Mayoral Candidate</a></li>
               </ul>
             </li>
     );
