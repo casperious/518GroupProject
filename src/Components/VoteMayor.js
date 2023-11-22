@@ -60,7 +60,7 @@ function VoteMayor(props) {
       const cand = candidates.find((candidate) => candidate._id == selectedCandidate);
       alert(`You voted for Mayor : ${cand.firstName} ${cand.lastName}`);
       setVoted({ "id": user_id, "vote": selectedCandidate })
-      let votes = yesCount.find((vote) => vote.candidateId === cand._id);
+      let votes = yesCount.find((vote) => vote.candidateId == cand._id);
       let vote = 0;
       if (votes == null) {
         vote = 0;
