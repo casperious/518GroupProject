@@ -67,8 +67,6 @@ const getRoleBasedActionsDropDown = () => {
               <ul class="dropdown-menu">
                 <li><a class="dropdown-item" href="/voteMayor" >Vote Mayor</a></li>
                 <li><a class="dropdown-item" href="/viewLaws" >Vote Laws</a></li>
-                <li><a class="dropdown-item" href="/sendFeedback" >TODO: View Feedback?</a></li>
-                <li><a class="dropdown-item" href="/sendComplaint" >TODO: View Complaints?</a></li>
               </ul>
             </li>
       );
@@ -80,8 +78,8 @@ const getRoleBasedActionsDropDown = () => {
                 Company
               </a>
               <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="/sendFeedback" >TODO: View Contracts?</a></li>
-                <li><a class="dropdown-item" href="/sendComplaint" >TODO: Sponsor Candidates?</a></li>
+                <li><a class="dropdown-item" href="/MyContracts" >View Contracts</a></li>
+                <li><a class="dropdown-item" href="/SponsorCandidates" >Sponsor Candidates</a></li>
               </ul>
             </li>
       );
@@ -93,9 +91,8 @@ const getRoleBasedActionsDropDown = () => {
                 City Official
               </a>
               <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="/">TODO: View Feedback</a></li>
-                <li><a class="dropdown-item" href="/sendComplaint">TODO: View Complaint</a></li>
-                <li><a class="dropdown-item" href="/Cityofficialsdepartments" >Hire Employees?</a></li>
+                <li><a class="dropdown-item" href="/ViewFeedbackAndComplaints">View Feedback/Complaints</a></li>
+                <li><a class="dropdown-item" href="/Cityofficialsdepartments" >Hire Employees</a></li>
               </ul>
             </li>
     );
