@@ -10,6 +10,7 @@ import RegisterCandidate from './Components/RegisterCandidate';
 import CreateDepartment from './Components/CreateDepartment';
 import CreateCityOfficial from './Components/CreateCityOfficial';
 import DepartmentControl from './Components/DepartmentControl';
+import MayorHome from './Components/MayorHome';
 
 function App() {
   const navigate = useNavigate()
@@ -46,6 +47,7 @@ function App() {
       <Route path='/CreateDepartment' element={<CreateDepartment />}></Route>
       <Route path='/CreateCityOfficial' element={<CreateCityOfficial />}></Route>
       <Route path='/DepartmentControl/:department_id' element={<DepartmentControl />}></Route>
+      <Route path='/MayorHome' element={<MayorHome />}></Route>
     </Routes>
   );
 

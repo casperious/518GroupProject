@@ -60,15 +60,30 @@ function VoteMayor(props) {
       const cand = candidates.find((candidate) => candidate._id == selectedCandidate);
       alert(`You voted for Mayor : ${cand.firstName} ${cand.lastName}`);
       setVoted({ "id": user_id, "vote": selectedCandidate })
-      const votes = yesCount.find((vote) => vote.candidateId == cand._id);
-      let vote = votes.votes;
+      let votes = yesCount.find((vote) => vote.candidateId == cand._id);
+      let vote = 0;
+      if (votes == null) {
+        vote = 0;
+        votes = new Object({
+          candidateId: cand._id,
+          votes: 0,
+        })
+      }
+      else {
+        vote = votes.votes;
+      }
       vote = vote + 1;
       var index = yesCount.indexOf(votes);
       const updatedVote = new Object({
         candidateId: votes.candidateId,
         votes: vote,
       })
-      const yesses = [...yesCount]
+      let yesses = [...yesCount];
+      if (yesCount.length == 0) {
+        yesses = [vote];
+        index = 0;
+      }
+
       yesses[index] = updatedVote;
       const users = userID;
       users.push(user_id);
@@ -107,7 +122,32 @@ function VoteMayor(props) {
         <div className="row justify-content-center align-items-center lcontainer team-list">
           <h4 id="ttle">Vote Mayor</h4> <br /> <br />
           {voted != "No" ? (
-            <h4>You have already voted</h4>
+            <>
+              <h4>You have already voted</h4>
+              <h5>Candidates and Policies</h5>
+              <table className="table table-striped table-bordered table-hover">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Policies</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {candidates.map((candidate) => (
+                    <tr key={candidate._id}>
+                      <td>{candidate.firstName} {candidate.lastName}<br></br>{candidate.sponsors[0]}</td>
+                      <td><Popup trigger={<button> Policies</button>} position="right center" modal nested>
+                        {
+                          candidate.policies.map((policy) => (
+                            <div>{policy}</div>
+                          ))
+                        }
+                      </Popup></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </>
           ) : (
             <>
               <table className="table table-striped table-bordered table-hover">

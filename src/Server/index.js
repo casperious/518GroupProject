@@ -21,7 +21,8 @@ const Complaint = require('./Schema/ComplaintSchema.jsx');
 const LawVotes = require('./Schema/LawVotesSchema.jsx');
 const Company = require('./Schema/CompanySignup.js');
 const Contract = require('./Schema/ContractSchema.jsx');
-const ContractRequest = require('./Schema/ContractRequest.js')
+const ContractRequest = require('./Schema/ContractRequest.js');
+const Mayor = require('./Schema/MayorSchema.jsx');
 
 
 
@@ -47,7 +48,7 @@ app.get("/", (req, res) => {
 // Add Automated Jobs / Scheduled Jobs here
 const updateLawState = async (law_id) => {
     try {
-        await Law.findOne({ _id: law_id}).then(async (law) => {
+        await Law.findOne({ _id: law_id }).then(async (law) => {
             //Get the vote history for that law
             await LawVotes.findOne({ lawID: law_id }).then(async (voting_history) => {
                 var newState = ""
@@ -69,7 +70,7 @@ const updateLawState = async (law_id) => {
                         state: newState,
                     }
                 }
-                
+
                 //Update Law
                 await Law.updateOne(query, updateDoc).then(async (result) => {
                     console.log(result);
@@ -77,16 +78,170 @@ const updateLawState = async (law_id) => {
             })
         })
     }
-    catch (err){
+    catch (err) {
         console.log(err)
     }
 }
 
 // Add Api calls here
 
-app.patch("/updateLawStatusForLawId", async (req, res) => {
-    console.log(`updateLawStatusForLawId: law_id: ${req.body.law_id}`)
-    
+app.post("/promoteMayor", async (req, res) => {
+    console.log("promoteMayor:")
+    try {
+        //Check if the current MayorVote has expired
+        await MayorVotes.find().then(async (mayorVote) => {
+            // mayor vote is an array of 1
+            const today = new Date()
+            //The vote has expired
+            if(today > mayorVote[0].endDate) {
+                // People actually registered as candidates
+                if(mayorVote[0].candidateID.length > 0) {
+                    //Determine the winner in Mayor vote
+                    var newMayorCandidateID = '' 
+                    var highestVote = -1
+                    for(const candidateVote of mayorVote[0].yesCount) {
+                        if(candidateVote.votes > highestVote) {
+                            newMayorCandidateID = candidateVote.candidateId
+                            highestVote = candidateVote.votes
+                        }
+                    }
+                    //Delete the Mayor Vote
+                    await MayorVotes.deleteMany().then(async (result) => {
+                        // Get the candidate object that won
+                        await Candidate.findOne({_id: newMayorCandidateID}).then(async (candidate) => {
+                            //Get the information we need for mayor
+                            const newMayorSponsors = candidate.sponsors
+                            const newMayorUserID = candidate.userID
+                            const newMayorBudget = 10000000
+                            const newMayorEndDate = moment(today).add(5, 'm').toDate()
+                            //Get the current Mayor's userID so we can update their privledges
+                            await Mayor.find().then(async (mayors) => {
+                                var currentMayor = {}
+                                var lastDate = ''
+                                for(const mayor of mayors) {
+                                    if(lastDate === '') {
+                                        lastDate = mayor.endDate
+                                        currentMayor = mayor
+                                    }
+                                    if(mayor.endDate > lastDate) {
+                                        lastDate = mayor.endDate
+                                        currentMayor = mayor
+                                    }
+                                }
+                                const previousMayorUserID = currentMayor.userId
+                                //Create the new mayor
+                                const newMayor = new Mayor({
+                                    dateAppointed: today,
+                                    endDate: newMayorEndDate,
+                                    budget: newMayorBudget,
+                                    userId: newMayorUserID,
+                                    sponsors: newMayorSponsors,
+                                })
+                                await newMayor.save()
+                                //Delete the candidates
+                                await Candidate.deleteMany().then(async (deleted) => {
+                                    //Create a blank mayor vote
+                                    const newMayorVote = new MayorVotes({
+                                        userID: [],
+                                        candidateID: [],
+                                        yesCount: [],
+                                        startDate: today,
+                                        endDate: newMayorEndDate,
+                                    })
+                                    
+                                    await newMayorVote.save()
+
+                                    //Update User privledges for both currentMayor and previousMayor
+                                    const previousMayorQuery = {
+                                        _id: previousMayorUserID,
+                                    }
+                                    const previousMayorUpdateDoc = {
+                                        $set: {
+                                            isCityOfficial: "No",
+                                            isMayor: "No",
+                                            isEmployee: "No",
+                                        }
+                                    }
+                                    const newMayorQuery = {
+                                        _id: newMayorUserID,
+                                    }
+                                    const newMayorUpdateDoc = {
+                                        $set: {
+                                            isCityOfficial: "No",
+                                            isMayor: "Yes",
+                                            isEmployee: "No",
+                                        }
+                                    }
+                                    await User.updateOne(previousMayorQuery, previousMayorUpdateDoc).then(async (updateLog) => {
+                                        console.log(updateLog)
+                                        await User.updateOne(newMayorQuery, newMayorUpdateDoc).then(async (updateLog2) => {
+                                            console.log(updateLog2)
+                                            res.status(200).send("New Mayor Has Been Elected!")
+                                        })
+                                    })
+                                })
+                            })
+                        })
+                    })
+                }
+                else {
+                    //Nobody elected to run for mayor so just reelect the same mayor
+                    //Update the end Date of the MayorVote
+                    const newMayorEndDate = moment(today).add(5, 'm').toDate()
+                    //Build the mayor vote query
+                    const mayorVoteQuery = {
+                        _id: mayorVote[0]._id,
+                    }
+                    const mayorVoteUpdateDoc = {
+                        $set: {
+                            endDate: newMayorEndDate,
+                        }
+                    }
+
+                    await MayorVotes.updateOne(mayorVoteQuery, mayorVoteUpdateDoc).then(async (update) => {
+                        console.log(update);
+                        //Get the current Mayor's userID so we can update their privledges
+                        await Mayor.find().then(async (mayors) => {
+                            var currentMayor = {}
+                            var lastDate = ''
+                            for(const mayor of mayors) {
+                                if(lastDate === '') {
+                                    lastDate = mayor.endDate
+                                    currentMayor = mayor
+                                }
+                                if(mayor.endDate > lastDate) {
+                                    lastDate = mayor.endDate
+                                    currentMayor = mayor
+                                }
+                            }
+                            //Build the mayor query
+                            const mayorQuery = {
+                                _id: currentMayor._id,
+                            }
+                            const mayorUpdateDoc = {
+                                $set: {
+                                    endDate: newMayorEndDate,
+                                }
+                            }
+
+                            await Mayor.updateOne(mayorQuery, mayorUpdateDoc).then(async (mayorUpdate) => {
+                                console.log(mayorUpdate)
+                                res.status(200).send("Original Mayor Reelected for another term")
+                            })
+                        })
+                    })
+
+                }
+            }
+            else {
+                res.status(200).send("Mayor's term has not expired yet")
+            }
+        })
+    }
+    catch (err) {
+        console.log(err)
+        res.status(500).send(err)
+    }
 })
 
 app.patch("/addYesVoteForLawVoteId", async (req, res) => {
@@ -103,7 +258,7 @@ app.patch("/addYesVoteForLawVoteId", async (req, res) => {
     const newUserList = req.body.law_vote.userID
     newUserList.push(req.body.user_id)
     const updateDoc = {
-        $set : {
+        $set: {
             yesCount: newCount,
             userID: newUserList
         }
@@ -135,7 +290,7 @@ app.patch("/addNoVoteForLawVoteId", async (req, res) => {
     const newUserList = req.body.law_vote.userID
     newUserList.push(req.body.user_id)
     const updateDoc = {
-        $set : {
+        $set: {
             noCount: newCount,
             userID: newUserList
         }
@@ -262,7 +417,7 @@ app.get("/getLawsForDepartmentId", (req, res) => {
         Law.find({ departmentId: req.query.departmentId }).then(async (laws) => {
             console.log(laws)
             // Attach the law votes for convience
-            for(const law of laws) {
+            for (const law of laws) {
                 // Only get laws that passed or are currently being voted on
                 if (law.state === "Pending" || law.state === "Active") {
                     //Get the vote for that law - Only return the _id, userID array, yesCount, and noCount for the vote record
@@ -286,6 +441,92 @@ app.get("/getLawsForDepartmentId", (req, res) => {
     catch (error) {
         console.log("getLawsForDepartmentId: Error")
         res.status(500).send(err);
+    }
+})
+
+app.get('/getLawsForMayor', async (req, res) => {
+    try {
+        let newDate = new Date();
+        const currentMayor = [];
+        //console.log(newDate);
+        const mayors = await Mayor.find();
+        //console.log(mayors);
+        for (const mayor of mayors) {
+            if (newDate < mayor.endDate && newDate > mayor.dateAppointed) {
+                //console.log("within range");
+                currentMayor.push(mayor);
+
+                break;
+            }
+        }
+        const laws = await Law.find({ passedBy: currentMayor[0]._id });
+        res.send(laws);
+    }
+    catch (error) {
+        res.status(500).send(error);
+    }
+})
+
+app.get('/getMayorSponsors', async (req, res) => {
+    try {
+        let newDate = new Date();
+        const currentMayor = [];
+        //console.log(newDate);
+        const mayors = await Mayor.find();
+        const sponsors = [];
+        //console.log(mayors);
+        for (const mayor of mayors) {
+            if (newDate < mayor.endDate && newDate > mayor.dateAppointed) {
+                //console.log("within range");
+                currentMayor.push(mayor);
+                for (const sponsor of mayor.sponsors) {
+                    //console.log("sponsor is ", sponsor);
+                    const company = await Company.find({ _id: sponsor });
+                    sponsors.push(company[0]);
+                }
+                break;
+            }
+        }
+        //console.log(sponsors);
+        res.send(sponsors);
+    }
+    catch (error) {
+        res.status(500).send(error);
+    }
+})
+
+app.get('/getMayorDetails', async (req, res) => {
+    try {
+        let newDate = new Date();
+        const currentMayor = [];
+        //console.log(newDate);
+        const mayors = await Mayor.find();
+        //console.log(mayors);
+        for (const mayor of mayors) {
+            if (newDate <= mayor.endDate && newDate >= mayor.dateAppointed) {
+                //console.log("within range");
+                currentMayor.push(mayor);
+                break;
+            }
+        }
+        const userDetails = await User.find({ _id: currentMayor[0].userId });
+        //console.log(userDetails)
+        const obj = new Object({
+            user_id: userDetails[0]._id,
+            dateAppointed: currentMayor[0].dateAppointed,
+            endDate: currentMayor[0].endDate,
+            budget: currentMayor[0].budget,
+            sponsors: currentMayor[0].sponsors,
+            firstName: userDetails[0].firstName,
+            lastName: userDetails[0].lastName,
+            email: userDetails[0].emailId
+        })
+        //console.log(obj);
+        res.send(obj);
+    }
+    catch (error) {
+        console.log(error)
+        res.status(500).send(error);
     }
 })
 
@@ -717,15 +958,15 @@ app.post('/postComplaint', async (req, res) => {
     }
 })
 
-app.post('/createCompany',async(req,res)=>{
+app.post('/createCompany', async (req, res) => {
     const company = new Company(req.body);
     console.log(company)
-    try{
+    try {
         await company.save();
         console.log("company signed up")
         res.send(company);
     }
-    catch(error){
+    catch (error) {
         res.status(500).send(error);
     }
 }
@@ -735,29 +976,28 @@ app.post("/logincompany", async (req, res) => {
     //console.log(" username and password to look for are ", req.query.username, req.query.password);
     const email = req.body.email;
     const password = req.body.password;
-    console.log(email,password);
+    console.log(email, password);
     try {
         const user = await Company.findOne({ email, password });
         console.log(user);
-        if(user)
-        res.send(user);
+        if (user)
+            res.send(user);
         else
-        res.status(500).send(error);
+            res.status(500).send(error);
     }
     catch (error) {
         res.status(500).send(error);
     }
 });
-app.post("/createContract",async(req,res)=>
-{
+app.post("/createContract", async (req, res) => {
     const contract = new Contract(req.body)
     console.log(contract)
-    try{
+    try {
         await contract.save();
-        console.log("company signed up")  
+        console.log("company signed up")
         res.send(contract);
     }
-    catch(error){
+    catch (error) {
         res.status(500).send(error);
     }
 
@@ -766,22 +1006,22 @@ app.post("/createContract",async(req,res)=>
 app.put('/updateDepartmentBudget/:departmentId', async (req, res) => {
     const departmentId = req.params.departmentId;
     const { budget } = req.body;
-  
-    try {
-      // Find the department by ID and update the budget
-      const updatedDepartment = await Department.findByIdAndUpdate(departmentId, { budget }, { new: true });
-  
-      // Respond with the updated department
-      console.log(updatedDepartment);
-      res.send(updatedDepartment)
-      
-    } catch (error) {
-      console.error(error);
-      res.status(500).send('Internal Server Error');
-    }
-  });
 
-  app.get("/getContracts", async (req, res) => {
+    try {
+        // Find the department by ID and update the budget
+        const updatedDepartment = await Department.findByIdAndUpdate(departmentId, { budget }, { new: true });
+
+        // Respond with the updated department
+        console.log(updatedDepartment);
+        res.send(updatedDepartment)
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+app.get("/getContracts", async (req, res) => {
     try {
 
         const departmentID = req.query.departmentID;
@@ -809,7 +1049,7 @@ app.get("/getContractRequests", async(req,res)=>
 app.get("/getContractsAll", async (req, res) => {
     try {
 
-        
+
         const contracts = await Contract.find();
         //console.log(contracts)
         res.send(contracts);
@@ -819,28 +1059,22 @@ app.get("/getContractsAll", async (req, res) => {
     }
 })
 
-app.post("/contractRequest",async(req,res)=>
-{
+app.post("/contractRequest", async (req, res) => {
     const contractreq = new ContractRequest(req.body)
     console.log(contractreq)
-    try{
+    try {
         await contractreq.save();
-       
+
         res.send(contractreq);
     }
-    catch(error){
+    catch (error) {
         res.status(500).send(error);
     }
 })
 
-
-app.get("/getcompanies",async(req,res)=>
-{
+app.get("/getcompanies", async (req, res) => {
     try {
-
-        
         const companies = await Company.find();
-        
         res.send(companies);
     }
     catch (error) {
@@ -872,8 +1106,6 @@ app.patch('/assignCompany/:contract_id', async (req, res) => {
         res.status(500).send(error);
     }
 });
-
-  
 const mongostring = "mongodb+srv://delegateAdmin:test12345@delegatecluster.rcuipff.mongodb.net/";
 mongoose.connect(mongostring);
 const database = mongoose.connection;
