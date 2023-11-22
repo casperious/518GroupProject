@@ -85,9 +85,163 @@ const updateLawState = async (law_id) => {
 
 // Add Api calls here
 
-app.patch("/updateLawStatusForLawId", async (req, res) => {
-    console.log(`updateLawStatusForLawId: law_id: ${req.body.law_id}`)
+app.post("/promoteMayor", async (req, res) => {
+    console.log("promoteMayor:")
+    try {
+        //Check if the current MayorVote has expired
+        await MayorVotes.find().then(async (mayorVote) => {
+            // mayor vote is an array of 1
+            const today = new Date()
+            //The vote has expired
+            if(today > mayorVote[0].endDate) {
+                // People actually registered as candidates
+                if(mayorVote[0].candidateID.length > 0) {
+                    //Determine the winner in Mayor vote
+                    var newMayorCandidateID = '' 
+                    var highestVote = -1
+                    for(const candidateVote of mayorVote[0].yesCount) {
+                        if(candidateVote.votes > highestVote) {
+                            newMayorCandidateID = candidateVote.candidateId
+                            highestVote = candidateVote.votes
+                        }
+                    }
+                    //Delete the Mayor Vote
+                    await MayorVotes.deleteMany().then(async (result) => {
+                        // Get the candidate object that won
+                        await Candidate.findOne({_id: newMayorCandidateID}).then(async (candidate) => {
+                            //Get the information we need for mayor
+                            const newMayorSponsors = candidate.sponsors
+                            const newMayorUserID = candidate.userID
+                            const newMayorBudget = 10000000
+                            const newMayorEndDate = moment(today).add(5, 'm').toDate()
+                            //Get the current Mayor's userID so we can update their privledges
+                            await Mayor.find().then(async (mayors) => {
+                                var currentMayor = {}
+                                var lastDate = ''
+                                for(const mayor of mayors) {
+                                    if(lastDate === '') {
+                                        lastDate = mayor.endDate
+                                        currentMayor = mayor
+                                    }
+                                    if(mayor.endDate > lastDate) {
+                                        lastDate = mayor.endDate
+                                        currentMayor = mayor
+                                    }
+                                }
+                                const previousMayorUserID = currentMayor.userId
+                                //Create the new mayor
+                                const newMayor = new Mayor({
+                                    dateAppointed: today,
+                                    endDate: newMayorEndDate,
+                                    budget: newMayorBudget,
+                                    userId: newMayorUserID,
+                                    sponsors: newMayorSponsors,
+                                })
+                                await newMayor.save()
+                                //Delete the candidates
+                                await Candidate.deleteMany().then(async (deleted) => {
+                                    //Create a blank mayor vote
+                                    const newMayorVote = new MayorVotes({
+                                        userID: [],
+                                        candidateID: [],
+                                        yesCount: [],
+                                        startDate: today,
+                                        endDate: newMayorEndDate,
+                                    })
+                                    
+                                    await newMayorVote.save()
 
+                                    //Update User privledges for both currentMayor and previousMayor
+                                    const previousMayorQuery = {
+                                        _id: previousMayorUserID,
+                                    }
+                                    const previousMayorUpdateDoc = {
+                                        $set: {
+                                            isCityOfficial: "No",
+                                            isMayor: "No",
+                                            isEmployee: "No",
+                                        }
+                                    }
+                                    const newMayorQuery = {
+                                        _id: newMayorUserID,
+                                    }
+                                    const newMayorUpdateDoc = {
+                                        $set: {
+                                            isCityOfficial: "No",
+                                            isMayor: "Yes",
+                                            isEmployee: "No",
+                                        }
+                                    }
+                                    await User.updateOne(previousMayorQuery, previousMayorUpdateDoc).then(async (updateLog) => {
+                                        console.log(updateLog)
+                                        await User.updateOne(newMayorQuery, newMayorUpdateDoc).then(async (updateLog2) => {
+                                            console.log(updateLog2)
+                                            res.status(200).send("New Mayor Has Been Elected!")
+                                        })
+                                    })
+                                })
+                            })
+                        })
+                    })
+                }
+                else {
+                    //Nobody elected to run for mayor so just reelect the same mayor
+                    //Update the end Date of the MayorVote
+                    const newMayorEndDate = moment(today).add(5, 'm').toDate()
+                    //Build the mayor vote query
+                    const mayorVoteQuery = {
+                        _id: mayorVote[0]._id,
+                    }
+                    const mayorVoteUpdateDoc = {
+                        $set: {
+                            endDate: newMayorEndDate,
+                        }
+                    }
+
+                    await MayorVotes.updateOne(mayorVoteQuery, mayorVoteUpdateDoc).then(async (update) => {
+                        console.log(update);
+                        //Get the current Mayor's userID so we can update their privledges
+                        await Mayor.find().then(async (mayors) => {
+                            var currentMayor = {}
+                            var lastDate = ''
+                            for(const mayor of mayors) {
+                                if(lastDate === '') {
+                                    lastDate = mayor.endDate
+                                    currentMayor = mayor
+                                }
+                                if(mayor.endDate > lastDate) {
+                                    lastDate = mayor.endDate
+                                    currentMayor = mayor
+                                }
+                            }
+                            //Build the mayor query
+                            const mayorQuery = {
+                                _id: currentMayor._id,
+                            }
+                            const mayorUpdateDoc = {
+                                $set: {
+                                    endDate: newMayorEndDate,
+                                }
+                            }
+
+                            await Mayor.updateOne(mayorQuery, mayorUpdateDoc).then(async (mayorUpdate) => {
+                                console.log(mayorUpdate)
+                                res.status(200).send("Original Mayor Reelected for another term")
+                            })
+                        })
+                    })
+
+                }
+            }
+            else {
+                res.status(200).send("Mayor's term has not expired yet")
+            }
+        })
+    }
+    catch (err) {
+        console.log(err)
+        res.status(500).send(err)
+    }
 })
 
 app.patch("/addYesVoteForLawVoteId", async (req, res) => {
@@ -349,7 +503,7 @@ app.get('/getMayorDetails', async (req, res) => {
         const mayors = await Mayor.find();
         //console.log(mayors);
         for (const mayor of mayors) {
-            if (newDate < mayor.endDate && newDate > mayor.dateAppointed) {
+            if (newDate <= mayor.endDate && newDate >= mayor.dateAppointed) {
                 //console.log("within range");
                 currentMayor.push(mayor);
                 break;
@@ -371,6 +525,7 @@ app.get('/getMayorDetails', async (req, res) => {
         res.send(obj);
     }
     catch (error) {
+        console.log(error)
         res.status(500).send(error);
     }
 })
