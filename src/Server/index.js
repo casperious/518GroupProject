@@ -85,6 +85,140 @@ const updateLawState = async (law_id) => {
 
 // Add Api calls here
 
+app.patch("/sponsorCandidate", async (req, res) => {
+    console.log("sponsorCandidate: ")
+    console.log(`sponsorCandidate: company_id ${req.body.company_id}`)
+    console.log(`sponsorCandidate: candidate_id ${req.body.candidate_id}`)
+    
+    try {
+        // Get the candidate
+        await Candidate.findOne({_id: req.body.candidate_id}).then(async (candidate) => {
+            var sponsors = candidate.sponsors
+            var canSponsor = true
+            for(const sponsorID of sponsors) {
+                if(sponsorID == req.body.company_id) {
+                    canSponsor = false;
+                    break;
+                }
+            }
+            if(canSponsor) {
+                const query = {
+                    _id: req.body.candidate_id,
+                }
+                sponsors.push(req.body.company_id)
+                const updateDoc = {
+                    $set: {
+                        sponsors: sponsors,
+                    }
+                }
+                await Candidate.updateOne(query, updateDoc).then(async (result) => {
+                    console.log(result)
+                    res.status(200).send(result)
+                })
+            }
+            else {
+                res.status(210).send("Company already sponsored this candidate!")
+            }
+        })
+    }
+    catch (err) {
+        console.log(err)
+        res.status(500).send(err)
+    }
+})
+
+
+app.get("/getDepartmentByUserID", async (req, res) => {
+    console.log("getDepartmentByUserID:")
+    console.log(`getDepartmentByUserID: user_id: ${req.query.user_id}`)
+    try {
+        //Get the city official
+        await Cityofficials.findOne({userId: req.query.user_id}).then(async (official) => {
+            console.log(official)
+            if(official !== null) {
+                //Get their department
+                await Department.findOne({cityOfficialID: official._id}).then(async (dept) => {
+                    if(dept != null) {
+                        res.status(200).send(dept)
+                    }
+                    else {
+                        res.status(500).send("City Official is not assigned a Department")
+                    }
+                })
+            }
+            else {
+                res.status(500).send("User is not a city official")
+            }
+        })
+    }
+    catch (err) {
+        console.log(err)
+        res.status(500).send(err)
+    }
+})
+
+app.get("/getComplaints", async (req, res) => {
+    console.log("getComplaints:")
+    console.log(`getComplaints: user_id: ${req.query.user_id}`)
+    try {
+        //Get the city official
+        await Cityofficials.findOne({userId: req.query.user_id}).then(async (official) => {
+            console.log(official)
+            //Get their department
+            await Department.findOne({cityOfficialID: official._id}).then(async (dept) => {
+                await Complaint.find({departmentId: dept._id}).then(async (complaints) => {
+                    var responses = []
+                    for(const response of complaints) {
+                        await User.findOne({_id: response.userId},{firstName: 1, lastName: 1}).then(async (citizen) => {
+                            responses.push({
+                                _id: response._id,
+                                user: `${citizen.firstName} ${citizen.lastName}`,
+                                complaint: response.complaint,
+                            })
+                        })
+                    }
+                    res.status(200).send(responses)
+                })
+            })
+        })
+    }
+    catch (err) {
+        console.log(err)
+        res.status(500).send(err)
+    }
+})
+
+app.get("/getFeedback", async (req, res) => {
+    console.log("getFeedback:")
+    console.log(`getFeedback: user_id: ${req.query.user_id}`)
+    try {
+        //Get the city official
+        await Cityofficials.findOne({userId: req.query.user_id}).then(async (official) => {
+            console.log(official)
+            //Get their department
+            await Department.findOne({cityOfficialID: official._id}).then(async (dept) => {
+                await Feedback.find({departmentId: dept._id}).then(async (feedback) => {
+                    var responses = []
+                    for(const response of feedback) {
+                        await User.findOne({_id: response.userId},{firstName: 1, lastName: 1}).then(async (citizen) => {
+                            responses.push({
+                                _id: response._id,
+                                user: `${citizen.firstName} ${citizen.lastName}`,
+                                feedback: response.feedback,
+                            })
+                        })
+                    }
+                    res.status(200).send(responses)
+                })
+            })
+        })
+    }
+    catch (err) {
+        console.log(err)
+        res.status(500).send(err)
+    }
+})
+
 app.post("/promoteMayor", async (req, res) => {
     console.log("promoteMayor:")
     try {
@@ -113,7 +247,7 @@ app.post("/promoteMayor", async (req, res) => {
                             const newMayorSponsors = candidate.sponsors
                             const newMayorUserID = candidate.userID
                             const newMayorBudget = 10000000
-                            const newMayorEndDate = moment(today).add(5, 'm').toDate()
+                            const newMayorEndDate = moment(today).add(60, 'm').toDate()
                             //Get the current Mayor's userID so we can update their privledges
                             await Mayor.find().then(async (mayors) => {
                                 var currentMayor = {}
@@ -187,7 +321,7 @@ app.post("/promoteMayor", async (req, res) => {
                 else {
                     //Nobody elected to run for mayor so just reelect the same mayor
                     //Update the end Date of the MayorVote
-                    const newMayorEndDate = moment(today).add(5, 'm').toDate()
+                    const newMayorEndDate = moment(today).add(60, 'm').toDate()
                     //Build the mayor vote query
                     const mayorVoteQuery = {
                         _id: mayorVote[0]._id,
