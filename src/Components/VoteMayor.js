@@ -136,7 +136,12 @@ function VoteMayor(props) {
                   {candidates.map((candidate) => (
                     <tr key={candidate._id}>
                       <td>{candidate.firstName} {candidate.lastName}<br></br>{candidate.sponsors[0]}</td>
-                      <td><Popup trigger={<button> Policies</button>} position="right center" modal nested>
+                      <td><Popup trigger={<button> Policies</button>} overlayStyle={{ backgroundColor: '#F8F8F8',
+                              border: '1px solid #DADADA',
+                              width: '500px',
+                              height: '300px',
+                              margin: 'auto',
+                              marginBottom: '50px' }} position="right center" modal nested>
                         {
                           candidate.policies.map((policy) => (
                             <div>{policy}</div>
@@ -162,7 +167,12 @@ function VoteMayor(props) {
                   {candidates.map((candidate) => (
                     <tr key={candidate._id}>
                       <td>{candidate.firstName} {candidate.lastName}<br></br>{candidate.sponsors[0]}</td>
-                      <td><Popup trigger={<button> Policies</button>} position="right center" modal nested>
+                      <td><Popup trigger={<button> Policies</button>} overlayStyle={{ backgroundColor: '#F8F8F8',
+                              border: '1px solid #DADADA',
+                              width: '500px',
+                              height: '300px',
+                              margin: 'auto',
+                              marginBottom: '50px' }} position="right center" modal nested>
                         {
                           candidate.policies.map((policy) => (
                             <div>{policy}</div>
