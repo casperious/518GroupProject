@@ -7,6 +7,7 @@ import Footer from "./footer";
 
 function RegisterCandidate(props) {
 
+    const [userData, setUserData] = useState([]);
     const [policies, setPolicies] = useState([]);
     const user_id = localStorage.getItem("user_id");
 
@@ -36,6 +37,17 @@ function RegisterCandidate(props) {
             console.log(`SERVER ERROR: ${err}`);
         }
     };
+    useEffect(() => {
+        axios.get('http://localhost:9000/getUsers')
+            .then(function (response) {
+                const userData = response.data;
+    
+                setUserData(userData);
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    }, []);  
     return (
         <div>
             <NavBar />
@@ -45,12 +57,18 @@ function RegisterCandidate(props) {
                         <h2 id="ttle">Register as Candidate</h2> <br />
                         <div className="form-group">
                             <label htmlFor="userID">User:</label>
-                            <label htmlFor="userID">{user_id}</label>
+                            
+                                {userData.map((user) => (
+                                    user._id === user_id && (
+                                    <span key={user._id}>{user.firstName} {user.lastName}</span>
+                             )
+                                ))}
+                            
                         </div>
                         <br />
                         <div className="form-group">
                             <label htmlFor="policies">Policies:</label>
-                            <textarea className="form-control" id="poliies" name="policies" onChange={(e) => setPoliciesState(e.target.value)} />
+                            <textarea className="form-control" id="poliies" name="policies"  placeholder="Enter policies as a comma-separated list" onChange={(e) => setPoliciesState(e.target.value)} />
                         </div>
                         <br />
                         <br />
@@ -62,5 +80,7 @@ function RegisterCandidate(props) {
         </div>
     );
 }
+
+
 
 export default RegisterCandidate;
