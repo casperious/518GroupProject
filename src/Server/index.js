@@ -85,6 +85,50 @@ const updateLawState = async (law_id) => {
 
 // Add Api calls here
 
+app.patch("/companyUnassignContract", async (req, res) => {
+    console.log("companyUnassignContract: ")
+    console.log(`companyUnassignContract: contract_id ${req.body.contract_id}`)
+    console.log(`companyUnassignContract: company_id ${req.body.company_id}`)
+    const query = {
+        _id: req.body.contract_id,
+    }
+    const updateDoc = {
+        $set: {
+            companyID: null,
+            status: "Pending",
+        }
+    }
+    try {
+        await Contract.updateOne(query, updateDoc).then(async (result) => {
+            console.log(result)
+            await ContractRequest.deleteOne({companyId: req.body.company_id, contractId: req.body.contract_id}).then(async (result2) => {
+                console.log(result)
+                res.status(200).send(result2)
+            })
+        })
+    }
+    catch (err) {
+        console.log(err)
+        res.status(500).send(err)
+    }
+})
+
+app.delete("/deleteContractRequest", async (req, res) => {
+    console.log("deleteContractRequest: ")
+    console.log(`deleteContractRequest: company_id ${req.query.company_id}`)
+    console.log(`deleteContractRequest: contract_id ${req.query.contract_id}`)
+    try {
+        await ContractRequest.deleteOne({companyId: req.query.company_id, contractId: req.query.contract_id}).then(async (result) => {
+            console.log(result)
+            res.status(200).send(result)
+        })
+    }
+    catch (err) {
+        console.log(err)
+        res.status(500).send(err)
+    }
+})
+
 app.patch("/sponsorCandidate", async (req, res) => {
     console.log("sponsorCandidate: ")
     console.log(`sponsorCandidate: company_id ${req.body.company_id}`)
