@@ -499,14 +499,20 @@ app.get("/getAllLawsAndVoteHistory", (req, res) => {
 
                         //Get the vote for that law - Only return the _id, userID array, yesCount, and noCount for the vote record
                         await LawVotes.find({ lawID: law._id }, { userID: 1, yesCount: 1, noCount: 1 }).then(async (voteHistory) => {
-                            //Add the law and its associated Voting History to lawList
-                            lawList.push({
-                                _id: law._id,
-                                title: law.title,
-                                description: law.description,
-                                state: law.state,
-                                department: dept[0],
-                                vote_history: voteHistory[0],
+                            //Adding mayor details to the lawlist
+                            await User.findOne({_id: law.passedBy}).then(async (user) => {
+                                console.log(user)
+                                //Add the law and its associated Voting History to lawList
+                                lawList.push({
+                                    _id: law._id,
+                                    passedBy: `${user.firstName} ${user.lastName}`,
+                                    title: law.title,
+                                    description: law.description,
+                                    state: law.state,
+                                    department: dept[0],
+                                    vote_history: voteHistory[0],
+                                })
+
                             })
                         })
                     })
