@@ -71,7 +71,7 @@ const renderLaw = (law, user_id, setFetchLaws) => {
     );
   }
   else if (law.state === "Active"){
-    const msg = `Voting is closed (${law.vote_history.yesCount} YAY - ${law.vote_history.noCount} NAY)`
+    const msg = `Voting is closed (${law.vote_history.yesCount} YAY - ${law.vote_history.noCount} NAY) Mayor ${law.passedBy}`
     return (
       <div>
         <h4>{lawCardTitle}</h4>

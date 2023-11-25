@@ -99,12 +99,13 @@ function MyContracts(props) {
                                 <div>
                                     {
                                         contract_desc.map((c, index) => {
-                                            //console.log(c)
+                                            const contractAmount = `$${c.budget}`
+                                            console.log(c)
                                             return (
                                             <>
                                                 <div className="contract-item">
-                                                    
                                                     <div className="description">{index+1}. {c.description}</div>
+                                                    <div className="description"> {contractAmount}</div>
                                                     <div className="status">{c.status}</div>
                                                     <button onClick={(event) => {
                                                         onDeleteContract(event, c, Company_id, setFetchReqs, setFetchContracts)
