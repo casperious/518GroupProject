@@ -22,6 +22,8 @@ function Home() {
     const [electMayor, setElectMayor] = useState(true)
     const [alerts,setAlerts] = useState([])
     const [contracts, setContracts] = useState([])
+    const [passedLaws, setPassedLaws] = useState([])
+    const [fetchLaws, setFetchLaws] = useState(true)
 
     useEffect(() => {
         if(electMayor) {
@@ -54,27 +56,48 @@ function Home() {
             }
             setElectMayor(false)
         }
+
+        if(fetchLaws) {
+            try {
+                axios.get("http://localhost:9000/getAllLawsAndVoteHistory", { })
+                .then((res)=> {
+                    if(res.data) {
+                        setPassedLaws(res.data)
+                        //console.log(res.data)
+                    }
+                })
+                .catch((error)=> {
+                    console.log(error)
+                })
+            }
+            catch (err) {
+                console.log(err)
+            }
+            setFetchLaws(false)
+        }
     })
+
     useEffect(()=>
     {
         axios.get("http://localhost:9000/getAlerts")
         .then((res)=>
         {
             setAlerts(res.data)
-            console.log(res.data)
+            //console.log(res.data)
         })
         .catch((error)=>
         {
             console.log("error")
         })
     },[])
+
     useEffect(()=>
     {
         axios.get("http://localhost:9000/getContractsAll")
         .then((res)=>
         {
             setContracts(res.data)
-            console.log(res.data)
+            //console.log(res.data)
         })
         .catch((error)=>
         {
@@ -149,11 +172,18 @@ function Home() {
                             <div className="card-body">
                             <div><h3>Latest Laws Passed</h3></div>
                             
-                            <ul className="custom-list">
-                                <li className="card-text text-start">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam</li>
-                                <li className="card-text text-start">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam</li>
-                                <li className="card-text text-start">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam</li>
-                                <li className="card-text text-start">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam</li>
+                            <ul className="custom-list">{
+                                passedLaws.map((law) => {
+                                        if(law.state==="Active")
+                                        {
+                                            const lawText = `${law.title} - ${law.department.name} - (${law.vote_history.yesCount} - ${law.vote_history.noCount})`
+                                            return(
+                                            <li key={law._id} className="card-text text-start">
+                                            {lawText}
+                                            </li>)
+                                        }
+                                        
+                                    })}
                             </ul>
                             
                             </div>
