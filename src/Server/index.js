@@ -406,8 +406,10 @@ app.post("/promoteMayor", async (req, res) => {
                             }
 
                             await Mayor.updateOne(mayorQuery, mayorUpdateDoc).then(async (mayorUpdate) => {
-                                console.log(mayorUpdate)
-                                res.status(200).send("Original Mayor Reelected for another term")
+                                await Candidate.deleteMany().then(async (test) => {
+                                    console.log(mayorUpdate)
+                                    res.status(200).send("Original Mayor Reelected for another term")
+                                })
                             })
                         })
                     })
@@ -772,10 +774,16 @@ app.get('/getCandidates', async (req, res) => {
         const candidates = await Candidate.find();
         for (const candidate of candidates) {
             const user = await User.findById(candidate.userID);
+            var sponsors = []
+            for (const companyID of candidate.sponsors) {
+                await Company.findOne({_id: companyID}).then((company) => {
+                    sponsors.push(company)
+                })
+            }
             const candDetails = new Object({
                 _id: candidate._id,
                 policies: candidate.policies,
-                sponsors: candidate.sponsors,
+                sponsors: sponsors,
                 firstName: user.firstName,
                 lastName: user.lastName,
                 emailId: user.emailId,

@@ -22,6 +22,7 @@ function VoteMayor(props) {
     axios.get("http://localhost:9000/getCandidates")
       .then((res) => {
         if (res.data) {
+          console.log(res.data)
           setCandidates(res.data);
         }
       }).catch((err) => {
@@ -133,9 +134,19 @@ function VoteMayor(props) {
                   </tr>
                 </thead>
                 <tbody>
-                  {candidates.map((candidate) => (
+                  {candidates.map((candidate) => {
+                    var sponsorText = 'Sponsors: '
+                    for(var i = 0; i < candidate.sponsors.length ; i++) {
+                        if(i == 0) {
+                          sponsorText = `${sponsorText}${candidate.sponsors[i].name}`
+                        }
+                        else {
+                          sponsorText = `${sponsorText}, ${candidate.sponsors[i].name}`
+                        }
+                    }
+                    return (
                     <tr key={candidate._id}>
-                      <td>{candidate.firstName} {candidate.lastName}<br></br>{candidate.sponsors[0]}</td>
+                      <td>{candidate.firstName} {candidate.lastName}<br></br>{sponsorText}</td>
                       <td><Popup trigger={<button> Policies</button>} overlayStyle={{ backgroundColor: '#F8F8F8',
                               border: '1px solid #DADADA',
                               width: '500px',
@@ -148,8 +159,8 @@ function VoteMayor(props) {
                           ))
                         }
                       </Popup></td>
-                    </tr>
-                  ))}
+                    </tr>)
+                  })}
                 </tbody>
               </table>
             </>
@@ -164,9 +175,19 @@ function VoteMayor(props) {
                   </tr>
                 </thead>
                 <tbody>
-                  {candidates.map((candidate) => (
+                  {candidates.map((candidate) => {
+                    var sponsorText = 'Sponsors: '
+                    for(var i = 0; i < candidate.sponsors.length ; i++) {
+                        if(i == 0) {
+                          sponsorText = `${sponsorText}${candidate.sponsors[i].name}`
+                        }
+                        else {
+                          sponsorText = `${sponsorText}, ${candidate.sponsors[i].name}`
+                        }
+                    }
+                    return ( 
                     <tr key={candidate._id}>
-                      <td>{candidate.firstName} {candidate.lastName}<br></br>{candidate.sponsors[0]}</td>
+                      <td>{candidate.firstName} {candidate.lastName}<br></br>{sponsorText}</td>
                       <td><Popup trigger={<button> Policies</button>} overlayStyle={{ backgroundColor: '#F8F8F8',
                               border: '1px solid #DADADA',
                               width: '500px',
@@ -189,7 +210,7 @@ function VoteMayor(props) {
                         />
                       </td>
                     </tr>
-                  ))}
+                  )})}
                 </tbody>
               </table>
 
