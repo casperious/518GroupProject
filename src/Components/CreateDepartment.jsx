@@ -13,6 +13,7 @@ function CreateDepartment(props) {
     const [budget, setBudget] = useState("");
     const [rules, setRules] = useState("");
     const [cityOfficials, setCityOfficials] = useState([]);
+    const [mayorDetails, setMayorDetails] = useState({});
     const user_id = localStorage.getItem("user_id");
 
     useEffect(() => {
@@ -22,12 +23,22 @@ function CreateDepartment(props) {
                 //something
                 console.log(res.data)
                 setCityOfficials(res.data);
-                alert(`City officials saved!`)
+                //alert(`City officials saved!`)
             })
             .catch((err) => {
                 console.log(`SERVER ERROR: ${err}`);
                 alert(`ERROR: ${err}`)
             })
+        axios.get('http://localhost:9000/getMayorDetails')
+        .then((res) => {
+            if (res.data) {
+                setMayorDetails(res.data);
+                console.log(res.data)
+            }
+            else
+                alert("No details");
+        })
+        .catch((err) => alert("Error in fetching mayor details"));
     }, []);
 
     const handleName = (e) => {
@@ -70,6 +81,9 @@ function CreateDepartment(props) {
             console.log(`SERVER ERROR: ${err}`);
         }
     };
+
+    const mayorName = `${mayorDetails.firstName} ${mayorDetails.lastName}`
+
     return (
         <div>
             <NavBar />
@@ -78,8 +92,8 @@ function CreateDepartment(props) {
                     <form className="col-6">
                         <h2 id="ttle">Create Department</h2> <br />
                         <div className="form-group">
-                            <label htmlFor="userID">Mayor:</label>
-                            <label htmlFor="userID">{user_id}</label>
+                            <label htmlFor="userID">Mayor: </label>
+                            <label htmlFor="userID">{mayorName}</label>
                         </div>
                         <br />
                         <div className="form-group">
