@@ -14,7 +14,7 @@ export default function CityDept({ setActive }) {
 
   const [cityValues, setCityValues] = useState({
     dept_id: '',
-    emp_id: '', 
+    user_id: '', 
     jobDescription: '',
   });
 
@@ -132,8 +132,8 @@ export default function CityDept({ setActive }) {
                     <label>Employees</label>
                     <select
                       className="form-control"
-                      name="emp_id"
-                      value={cityValues.emp_id}
+                      name="user_id"
+                      value={cityValues.user_id}
                       onChange={handleInputChange}
                     >
                       
@@ -141,7 +141,8 @@ export default function CityDept({ setActive }) {
                     <option value="">Select employee </option>
                           {userData.map((users) => {
                               
-                              if (!users.isCityOfficials && !users.isMayor) {
+                             
+                             if (users.isCityOfficial === "No" && users.isMayor === "No" && users.isEmployee === "No"){
                           return (
                               <option key={users._id} value={users._id}>
                               {users.firstName} {users.lastName}
