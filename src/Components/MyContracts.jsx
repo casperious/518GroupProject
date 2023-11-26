@@ -9,9 +9,9 @@ import Footer from "./footer";
 const onDeleteContract = (event, contract, Company_id, setFetchReqs, setFetchContracts) => {
     event.preventDefault()
     console.log(contract)
-    if(contract.status === "Pending") {
+    if(contract[1] === "Pending") {
         //Delete contract request
-        axios.delete("http://localhost:9000/deleteContractRequest", { params: { company_id: Company_id, contract_id: contract._id }})
+        axios.delete("http://localhost:9000/deleteContractRequest", { params: { company_id: Company_id, contract_id: contract[3] }})
         .then((res) => {
             if(res.data) {
                 console.log(res.data)
@@ -23,9 +23,9 @@ const onDeleteContract = (event, contract, Company_id, setFetchReqs, setFetchCon
             console.log(err)
         })
     }
-    else {
+    else if(contract[1] === "Accepted") {
         //Update Contract
-        axios.patch("http://localhost:9000/companyUnassignContract", { company_id: Company_id, contract_id: contract._id })
+        axios.patch("http://localhost:9000/companyUnassignContract", { company_id: Company_id, contract_id: contract[3] })
         .then((res) => {
             if(res.data) {
                 console.log(res.data)
@@ -51,7 +51,7 @@ function MyContracts(props) {
             // Fetch contract details based on the contract ID
             axios.get('http://localhost:9000/getContractRequests')
                 .then((res) => {
-                    console.log(res.data);
+                    //console.log(res.data);
                     setReqs(res.data)
                    
                 })
@@ -67,7 +67,7 @@ function MyContracts(props) {
             // Fetch contract details based on the contract ID
             axios.get(`http://localhost:9000/getContractsAll`)
             .then((res) => {
-                console.log(res.data);
+                //console.log(res.data);
                 setContracts(res.data)
                 
             })
@@ -87,18 +87,18 @@ function MyContracts(props) {
     const contract_status = []
     contract_desc.map((c)=>
     {
-        console.log(c.companyID)
+        console.log(c)
         if(c.companyID===Company_id)
         {
-            contract_status.push([c.description,"Accepted"])
+            contract_status.push([c.description,"Accepted", c.budget, c._id])
 
         }
         else if(c.companyID===null)
         {
-            contract_status.push([c.description,"Pending"])
+            contract_status.push([c.description,"Pending", c.budget, c._id])
         }
         else{
-            contract_status.push([c.description,"Declined"])
+            contract_status.push([c.description,"Declined", c.budget, c._id])
         }
     })
     console.log(contract_status)
@@ -112,15 +112,17 @@ function MyContracts(props) {
                     <div className="col-lg-9 offset-1">
                         <div className="card">
                             <div className="card-body ">
-                                <h4 > Applied Contracts</h4>
+                                <h4>Applied Contracts</h4>
     
                                 <div>
                                     {
-                                        contract_status.map((c, index) => (
-                                            <>
+                                        contract_status.map((c, index) => {
+                                            const contractAmount = `$${c[2]}`
+                                            return(<>
                                                 <div className="contract-item">
                                                     
                                                     <div className="description">{index+1}. {contract_status[index][0]}</div>
+                                                    <div className="status">{contractAmount}</div>
                                                     <div className="status">{contract_status[index][1]}</div>
                                                     <button onClick={(event) => {
                                                         onDeleteContract(event, c, Company_id, setFetchReqs, setFetchContracts)
@@ -129,7 +131,7 @@ function MyContracts(props) {
                                                 <br />
                                             </>)
                                             
-                                        )
+                                        })
                                     }
                                 </div>
     
