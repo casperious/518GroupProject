@@ -118,7 +118,7 @@ const onSubmitCreateLaw = (event, description, title, departmentId, setFetchLaws
             // Law was created, noew create vote history
             axios.post("http://localhost:9000/createLawVote", { userID: res1.data.passedBy, lawID: res1.data._id}).then((res) => {
                 //console.log(res.data);
-                alert("Law Created Successfully")
+                alert("Law Created Successfully") 
                 setFetchLaws(true);
             }) 
         })

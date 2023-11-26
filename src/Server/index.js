@@ -88,6 +88,50 @@ const updateLawState = async (law_id) => {
 
 // Add Api calls here
 
+app.patch("/companyUnassignContract", async (req, res) => {
+    console.log("companyUnassignContract: ")
+    console.log(`companyUnassignContract: contract_id ${req.body.contract_id}`)
+    console.log(`companyUnassignContract: company_id ${req.body.company_id}`)
+    const query = {
+        _id: req.body.contract_id,
+    }
+    const updateDoc = {
+        $set: {
+            companyID: null,
+            status: "Pending",
+        }
+    }
+    try {
+        await Contract.updateOne(query, updateDoc).then(async (result) => {
+            console.log(result)
+            await ContractRequest.deleteOne({companyId: req.body.company_id, contractId: req.body.contract_id}).then(async (result2) => {
+                console.log(result)
+                res.status(200).send(result2)
+            })
+        })
+    }
+    catch (err) {
+        console.log(err)
+        res.status(500).send(err)
+    }
+})
+
+app.delete("/deleteContractRequest", async (req, res) => {
+    console.log("deleteContractRequest: ")
+    console.log(`deleteContractRequest: company_id ${req.query.company_id}`)
+    console.log(`deleteContractRequest: contract_id ${req.query.contract_id}`)
+    try {
+        await ContractRequest.deleteOne({companyId: req.query.company_id, contractId: req.query.contract_id}).then(async (result) => {
+            console.log(result)
+            res.status(200).send(result)
+        })
+    }
+    catch (err) {
+        console.log(err)
+        res.status(500).send(err)
+    }
+})
+
 app.patch("/sponsorCandidate", async (req, res) => {
     console.log("sponsorCandidate: ")
     console.log(`sponsorCandidate: company_id ${req.body.company_id}`)
@@ -458,14 +502,20 @@ app.get("/getAllLawsAndVoteHistory", (req, res) => {
 
                         //Get the vote for that law - Only return the _id, userID array, yesCount, and noCount for the vote record
                         await LawVotes.find({ lawID: law._id }, { userID: 1, yesCount: 1, noCount: 1 }).then(async (voteHistory) => {
-                            //Add the law and its associated Voting History to lawList
-                            lawList.push({
-                                _id: law._id,
-                                title: law.title,
-                                description: law.description,
-                                state: law.state,
-                                department: dept[0],
-                                vote_history: voteHistory[0],
+                            //Adding mayor details to the lawlist
+                            await User.findOne({_id: law.passedBy}).then(async (user) => {
+                                console.log(user)
+                                //Add the law and its associated Voting History to lawList
+                                lawList.push({
+                                    _id: law._id,
+                                    passedBy: `${user.firstName} ${user.lastName}`,
+                                    title: law.title,
+                                    description: law.description,
+                                    state: law.state,
+                                    department: dept[0],
+                                    vote_history: voteHistory[0],
+                                })
+
                             })
                         })
                     })

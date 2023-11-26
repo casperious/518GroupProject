@@ -6,26 +6,66 @@ import axios from "axios";
 import NavBar from "./NavBar";
 import Footer from "./footer";
 
+const onDeleteContract = (event, contract, Company_id, setFetchReqs, setFetchContracts) => {
+    event.preventDefault()
+    console.log(contract)
+    if(contract.status === "Pending") {
+        //Delete contract request
+        axios.delete("http://localhost:9000/deleteContractRequest", { params: { company_id: Company_id, contract_id: contract._id }})
+        .then((res) => {
+            if(res.data) {
+                console.log(res.data)
+            }
+            setFetchReqs(true)
+            setFetchContracts(true)
+        })
+        .catch((err) => {
+            console.log(err)
+        })
+    }
+    else {
+        //Update Contract
+        axios.patch("http://localhost:9000/companyUnassignContract", { company_id: Company_id, contract_id: contract._id })
+        .then((res) => {
+            if(res.data) {
+                console.log(res.data)
+            }
+            setFetchReqs(true)
+            setFetchContracts(true)
+        })
+        .catch((err) => {
+            console.log(err)
+        })
+    }
+}
 
 function MyContracts(props) {
     const Company_id = localStorage.getItem('company_id')
     const [reqs, setReqs] = useState([])
+    const [fetchReqs, setFetchReqs] = useState(true)
     const [contracts, setContracts] = useState([])
+    const [fetchContracts, setFetchContracts] = useState(true)
+
     useEffect(() => {
-        // Fetch contract details based on the contract ID
-        axios.get('http://localhost:9000/getContractRequests')
-            .then((res) => {
-                console.log(res.data);
-                setReqs(res.data)
-               
-            })
-            .catch((error) => {
-                console.error('Error fetching contract details:', error);
-            });
-    }, []);
+        if(fetchReqs) {
+            // Fetch contract details based on the contract ID
+            axios.get('http://localhost:9000/getContractRequests')
+                .then((res) => {
+                    console.log(res.data);
+                    setReqs(res.data)
+                   
+                })
+                .catch((error) => {
+                    console.error('Error fetching contract details:', error);
+                });
+            setFetchReqs(false)
+        }
+    });
+
     useEffect(() => {
-        // Fetch contract details based on the contract ID
-        axios.get(`http://localhost:9000/getContractsAll`)
+        if(fetchContracts) {
+            // Fetch contract details based on the contract ID
+            axios.get(`http://localhost:9000/getContractsAll`)
             .then((res) => {
                 console.log(res.data);
                 setContracts(res.data)
@@ -34,7 +74,10 @@ function MyContracts(props) {
             .catch((error) => {
                 console.error('Error fetching contract details:', error);
             });
-    }, []);
+            setFetchContracts(false)
+        }
+    });
+
     const applied_contracts = reqs.filter((req)=> req.companyId === Company_id)
     console.log(applied_contracts)
     const contract_desc = contracts.filter((c) => {
@@ -69,7 +112,7 @@ function MyContracts(props) {
                     <div className="col-lg-9 offset-1">
                         <div className="card">
                             <div className="card-body ">
-                                <h4 > Applied Contrats</h4>
+                                <h4 > Applied Contracts</h4>
     
                                 <div>
                                     {
@@ -79,11 +122,14 @@ function MyContracts(props) {
                                                     
                                                     <div className="description">{index+1}. {contract_status[index][0]}</div>
                                                     <div className="status">{contract_status[index][1]}</div>
+                                                    <button onClick={(event) => {
+                                                        onDeleteContract(event, c, Company_id, setFetchReqs, setFetchContracts)
+                                                    }}>Delete</button>
                                                 </div>
                                                 <br />
-                                            </>
+                                            </>)
                                             
-                                        ))
+                                        )
                                     }
                                 </div>
     
