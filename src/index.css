@@ -46,7 +46,14 @@ code {
 .image{
   width:100%;
   height:350px;
-  border-radius: 25px;
+  
+}
+.card:hover {
+  box-shadow: 0 0 15px #800080; /* Purple box shadow */
+}
+.card {
+  
+  transition: box-shadow 0.3s ease-in-out;
 }
 .banner_content{
   position : absolute;

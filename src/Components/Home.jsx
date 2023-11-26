@@ -20,6 +20,8 @@ function Home() {
     const [mayor, setMayor] = useState({})
     const [fetchMayor, setFetchMayor] = useState(true)
     const [electMayor, setElectMayor] = useState(true)
+    const [alerts,setAlerts] = useState([])
+    const [contracts, setContracts] = useState([])
 
     useEffect(() => {
         if(electMayor) {
@@ -53,22 +55,99 @@ function Home() {
             setElectMayor(false)
         }
     })
+    useEffect(()=>
+    {
+        axios.get("http://localhost:9000/getAlerts")
+        .then((res)=>
+        {
+            setAlerts(res.data)
+            console.log(res.data)
+        })
+        .catch((error)=>
+        {
+            console.log("error")
+        })
+    },[])
+    useEffect(()=>
+    {
+        axios.get("http://localhost:9000/getContractsAll")
+        .then((res)=>
+        {
+            setContracts(res.data)
+            console.log(res.data)
+        })
+        .catch((error)=>
+        {
+            console.log("error")
+        })
+    },[])
+    // useEffect(()=>
+    // {
+    //     axios.get("http://localhost:9000/getAlerts")
+    //     .then((res)=>
+    //     {
+    //         setAlerts(res.data)
+    //         console.log(res.data)
+    //     })
+    //     .catch((error)=>
+    //     {
+    //         console.log("error")
+    //     })
+    // },[])
+    
 
     return (
         <div>
            <NavBar /> 
-            <div className="container-fluid">
+            <div >
                 <img src="/images/bg.jpg" alt="banner" className="image"  />
                 <div className="jumbotron mt-2 custom-jumbotron text-center banner_content">
                     {getHomePageBanner(mayor)}
                 </div>
-            
-
+                
                 <div className="row row-style text-center" >
-                    <div className="col-lg-9">
+                    <div className="col-lg-4">
                         <div className="card">
                             <div className="card-body">
-                            <div className='card-title '><div className="fas fa-exclamation-triangle "> Important Alerts</div></div>
+                                <h3>Important Alerts</h3>
+                                <ul className="custom-list">
+                                    {alerts.map((a) => (
+                                        <li key={a._id} className="card-text text-start">
+                                            {a.Announcement}
+                                        </li>
+                                    ))}
+                                </ul>
+                                
+                            </div>
+                        </div>
+                    </div>
+                    <div className="col-lg-4">
+                        <div className="card">
+                            <div className="card-body">
+                                <h3>New Contracts</h3>
+                                <ul className="custom-list">
+                                    {contracts.map((c) => {
+                                        if(c.status==="Pending")
+                                        {
+                                            return(
+                                            <li key={c._id} className="card-text text-start">
+                                            { c.description}
+                                            </li>)
+                                        }
+                                        
+                                    })}
+                                </ul>
+                                
+                            </div>
+                        </div>
+                    </div>
+
+
+                    
+                    <div className="col-lg-4">
+                        <div className="card">
+                            <div className="card-body">
+                            <div><h3>Latest Laws Passed</h3></div>
                             
                             <ul className="custom-list">
                                 <li className="card-text text-start">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam</li>
@@ -76,60 +155,14 @@ function Home() {
                                 <li className="card-text text-start">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam</li>
                                 <li className="card-text text-start">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam</li>
                             </ul>
-                            <a href="/viewmore" className="text-style">View more</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="col-lg-3">
-                        <img src="/images/alert.jpg" alt="banner" className='row_img'  />
-                    </div>
-                  
-                </div>
-                
-                <div className="row row-style text-center" >
-                    <div className="col-lg-9">
-                        <div className="card">
-                            <div className="card-body">
-                            <div className="card-title"><div class="fa fa-list-alt"> Contracts </div></div>
                             
-                            <ul className="custom-list">
-                                <li className="card-text text-start">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam</li>
-                                <li className="card-text text-start">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam</li>
-                                <li className="card-text text-start">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam</li>
-                                <li className="card-text text-start">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam</li>
-                              </ul>
-                              <a href="/viewmore" className="text-style">View more</a>
                             </div>
                         </div>
-                    </div>
-                    <div className="col-lg-3">
-                        <img src="/images/contract.jpg" alt="banner" className='row_img'  />
-                    </div>
-                  
-                </div>
-                <div className="row row-style text-center" >
-                    <div className="col-lg-3">
-                        <img src="/images/Law.jpg" alt="banner" className='row_img'  />
                     </div>
                     
-                    <div className="col-lg-9">
-                        <div className="card">
-                            <div className="card-body">
-                            <div className="card-title"><div class="fa fa-list-alt"> Latest Laws Passed</div></div>
-                            
-                            <ul className="custom-list">
-                                <li className="card-text text-start">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam</li>
-                                <li className="card-text text-start">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam</li>
-                                <li className="card-text text-start">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam</li>
-                                <li className="card-text text-start">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam</li>
-                            </ul>
-                            <a href="/viewmore" className="text-style">View more</a>
-                            </div>
-                        </div>
-                    </div>
-
+                  
                 </div>
-                
+
             </div>
             <Footer/>
             
