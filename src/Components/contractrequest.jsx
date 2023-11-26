@@ -49,6 +49,7 @@ function ContractRequest() {
         .then((res) => {
             
             alert("Assigned COmpany");
+            window.location.reload()
           })
           .catch((error) => {
             alert("Error updating in Assigning:", error);
@@ -86,16 +87,23 @@ function ContractRequest() {
                                                                 <div key={cr._id} >
                                                                     {matchingCompany && (
                                                                         <>
-                                                                            {matchingCompany.name} {cr.bid}
+                                                                            <div className='subnav'>
+                                                                                <div >{matchingCompany.name}</div> 
+                                                                                <div className='top-right'>{cr.bid}
+                                                                                
+                                                                                <button
+                                                                                    type="submit"
+                                                                                    className="dislike-button btn btn-primary"
+                                                                                    onClick={(e)=>{handleSubmit(e,matchingCompany._id,cr.contractId)}}
+                                                                                    
+                                                                                >
+                                                                                    Assign
+                                                                                </button>
+                                                                                </div>
+                                                                            </div>
                                                                             
-                                                                            <button
-                                                                                type="submit"
-                                                                                className="dislike-button btn btn-primary"
-                                                                                onClick={(e)=>{handleSubmit(e,matchingCompany._id,cr.contractId)}}
-                                                                            >
-                                                                                Assign
-                                                                            </button>
-                                                                            <br />
+                                                                            
+                                                                          
                                                                         </>
                                                                     )}
                                                                     

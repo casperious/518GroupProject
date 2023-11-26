@@ -83,7 +83,25 @@ function MyContracts(props) {
     const contract_desc = contracts.filter((c) => {
         return applied_contracts.map((a) => a.contractId).includes(c._id);
     });
-    
+    console.log(contract_desc)
+    const contract_status = []
+    contract_desc.map((c)=>
+    {
+        console.log(c.companyID)
+        if(c.companyID===Company_id)
+        {
+            contract_status.push([c.description,"Accepted"])
+
+        }
+        else if(c.companyID===null)
+        {
+            contract_status.push([c.description,"Pending"])
+        }
+        else{
+            contract_status.push([c.description,"Declined"])
+        }
+    })
+    console.log(contract_status)
 
     return (
         <div>
@@ -98,15 +116,12 @@ function MyContracts(props) {
     
                                 <div>
                                     {
-                                        contract_desc.map((c, index) => {
-                                            const contractAmount = `$${c.budget}`
-                                            console.log(c)
-                                            return (
+                                        contract_status.map((c, index) => (
                                             <>
                                                 <div className="contract-item">
-                                                    <div className="description">{index+1}. {c.description}</div>
-                                                    <div className="description"> {contractAmount}</div>
-                                                    <div className="status">{c.status}</div>
+                                                    
+                                                    <div className="description">{index+1}. {contract_status[index][0]}</div>
+                                                    <div className="status">{contract_status[index][1]}</div>
                                                     <button onClick={(event) => {
                                                         onDeleteContract(event, c, Company_id, setFetchReqs, setFetchContracts)
                                                     }}>Delete</button>
@@ -114,7 +129,7 @@ function MyContracts(props) {
                                                 <br />
                                             </>)
                                             
-                                        })
+                                        )
                                     }
                                 </div>
     

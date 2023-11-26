@@ -220,6 +220,8 @@ function Department()
 
     const [contracts, setContracts] = useState([])
     const [reqs, setReqs] = useState([])
+
+    const [alerts, setAlerts] = useState([])
     
     const navigate = useNavigate();
     
@@ -286,15 +288,18 @@ function Department()
             );
         }
     }
-    const getAssignedContractCard = (Contract)=>
+    const getAssignedContractCard = ( Contract)=>
     {
         if(Contract.status === "Assigned") {
             return (
+                <div>
                 <li className="card-text text-start" id={Contract._id}>
                     
                     {Contract.description}<br/>
                     
                 </li>
+               
+                </div>
             );
         }
     }
@@ -353,6 +358,22 @@ function Department()
         
 
     })
+    useEffect(()=>
+    {
+        axios.get("http://localhost:9000/getAlerts")
+        .then((res)=>
+        {
+            setAlerts(res.data)
+            console.log(res.data)
+        })
+        .catch((error)=>
+        {
+            console.log("error")
+        })
+    },[])
+
+    const depAlerts = alerts.filter((a)=>a.departmentId===currentDepartment._id)
+    console.log(depAlerts)
     useEffect(()=>
     {
          axios.get("http://localhost:9000/getContracts",{params : {departmentID : currentDepartment._id}})
@@ -489,18 +510,22 @@ function Department()
                                             }
                                          </ul>
                                 </div>
+                                
                             </div>
                         </div>
                         
                         <div className="row  text-center" >
                             <div className="card">
                                 <div className="card-body">
-                                    <div className='card-title '><h5>Announcements</h5>  </div>
+                                <div className='card-title '><h5>Announcements</h5>  </div>
+                                    <ul className="custom-list">
+                                        {depAlerts.map((a) => (
+                                            <li key={a._id} className="card-text text-start">
+                                                {a.Announcement}
+                                            </li>
+                                        ))}
+                                    </ul>
                                     
-                                        <ul className="custom-list">
-                                            <li className="card-text text-start">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam</li>
-                                            <li className="card-text text-start">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam</li>
-                                        </ul>
                                 </div>
                             </div>
                         </div>

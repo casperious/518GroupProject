@@ -29,6 +29,7 @@ import MyContracts from './Components/MyContracts';
 import MayorHome from './Components/MayorHome';
 import ViewFeedbackAndComplaints from './Components/ViewFeedbackAndComplaints';
 import SponsorMayoralCandidates from './Components/SponsorMayoralCandidates';
+import Alerts from './Components/Alerts'
 
 
 const router = createBrowserRouter(
@@ -57,6 +58,7 @@ const router = createBrowserRouter(
       <Route path='/MayorHome' element={<MayorHome />}></Route>
       <Route path='/ViewFeedbackAndComplaints' element={<ViewFeedbackAndComplaints/>}></Route>
       <Route path='/SponsorCandidates' element={<SponsorMayoralCandidates/>}></Route>
+      <Route path='/Alerts' element={<Alerts/>}> </Route>
     </>
   )
 )

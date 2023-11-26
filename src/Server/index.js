@@ -23,6 +23,9 @@ const Company = require('./Schema/CompanySignup.js');
 const Contract = require('./Schema/ContractSchema.jsx');
 const ContractRequest = require('./Schema/ContractRequest.js');
 const Mayor = require('./Schema/MayorSchema.jsx');
+const Alert = require('./Schema/Alerts.js')
+
+
 
 
 
@@ -1290,6 +1293,55 @@ app.patch('/assignCompany/:contract_id', async (req, res) => {
         res.status(500).send(error);
     }
 });
+app.get('/getdepIdbyCO/:userId', async(req,res)=>
+{
+    const user = req.params.userId
+    console.log(user)
+
+    try{
+        const CO = await Cityofficials.find();
+        const depId = CO.find((c) => String(c.userId) === user);
+
+        if (depId) {
+            console.log(CO, depId);
+            res.send(depId); // Send the found depId
+        } else {
+            console.log("DepId not found");
+            res.status(404).send("DepId not found");
+        }
+    }
+    catch(error){
+        res.status(500).send(error)
+    }
+})
+
+app.post('/AddAnnouncement',async(req,res)=>
+{
+    console.log(req.body)
+    const alert = new Alert(req.body)
+    const { userId, departmentId, Announcement } = req.body;
+
+    try {
+        // Create a new Alert instance
+        const newAlert = new Alert({
+            userId: userId,
+            departmentId: departmentId,
+            Announcement: Announcement,
+        });
+        const savedAlert = await newAlert.save();
+
+        res.send(savedAlert);
+    }
+    catch(error){
+        res.status(500).send(error)
+    }
+})
+
+app.get("/getAlerts", async(req,res)=>
+{
+    const alerts = await Alert.find()
+    res.send(alerts)
+})
 const mongostring = "mongodb+srv://delegateAdmin:test12345@delegatecluster.rcuipff.mongodb.net/";
 mongoose.connect(mongostring);
 const database = mongoose.connection;
