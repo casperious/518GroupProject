@@ -144,7 +144,7 @@ const getDepartmentHeaderLeft = (name, budget, isMyDepartment) => {
         return (
             <>
                 <h4>{name}</h4>
-                <h4>{`Available Budget: $${budget}`}</h4>
+                <h4>{`Available Budget: $${budget.toFixed(2)}`}</h4>
             </>
         )
     }
@@ -423,7 +423,11 @@ function Department()
                             </div>
                             
                             <div className="form-group">
-                                <input type="number" id="Priority" className="form-control" placeholder="Enter budget"  onChange={(event) => setBudget(event.target.value)}
+                                <input type="number" id="Priority" className="form-control" placeholder="Enter budget (amount rounded to nearest cent)" onChange={(event) => {
+                                        var amt = Number(event.target.value)
+                                        amt = amt.toFixed(2)
+                                        setBudget(event.target.value)
+                                    }}
                                 required/> 
                             </div>
                             <div>

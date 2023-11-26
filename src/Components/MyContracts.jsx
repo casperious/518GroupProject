@@ -117,7 +117,7 @@ function MyContracts(props) {
                                 <div>
                                     {
                                         contract_status.map((c, index) => {
-                                            const contractAmount = `$${c[2]}`
+                                            const contractAmount = `$${Number(c[2]).toFixed(2)}`
                                             return(<>
                                                 <div className="contract-item">
                                                     

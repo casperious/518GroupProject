@@ -78,7 +78,11 @@ function ApplyContract()
                         </div>
                         
                         <div className="form-group">
-                            <input type="number" id="bid" className="form-control" placeholder="Enter bidding Amount"  onChange={(event) => setBidding(event.target.value)}
+                            <input type="number" id="bid" className="form-control" placeholder="Enter bidding Amount"  onChange={(event) => {
+                                    var amt = Number(event.target.value)
+                                    amt = amt.toFixed(2)
+                                    setBidding(amt)
+                                }}
                             required/> 
                         </div>
                         <div>

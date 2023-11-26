@@ -64,9 +64,19 @@ const SponsorMayoralCandidates = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {candidates.map((candidate) => (
+                  {candidates.map((candidate) => {
+                    var sponsorText = 'Sponsors: '
+                    for(var i = 0; i < candidate.sponsors.length ; i++) {
+                        if(i == 0) {
+                          sponsorText = `${sponsorText}${candidate.sponsors[i].name}`
+                        }
+                        else {
+                          sponsorText = `${sponsorText}, ${candidate.sponsors[i].name}`
+                        }
+                    }
+                    return ( 
                     <tr key={candidate._id}>
-                      <td>{candidate.firstName} {candidate.lastName}<br></br>{candidate.sponsors[0]}</td>
+                      <td>{candidate.firstName} {candidate.lastName}<br></br>{sponsorText}</td>
                       <td><Popup trigger={<button> Policies</button>} position="right center" modal nested>
                         {
                           candidate.policies.map((policy) => (
@@ -87,7 +97,7 @@ const SponsorMayoralCandidates = () => {
                         >Sponsor</button>
                       </td>
                     </tr>
-                  ))}
+                  )})}
                 </tbody>
               </table>
             </>
