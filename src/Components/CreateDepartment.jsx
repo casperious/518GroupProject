@@ -23,6 +23,10 @@ function CreateDepartment(props) {
                 //something
                 console.log(res.data)
                 setCityOfficials(res.data);
+                if (res.data.length > 0)
+                    setCityOfficialId(res.data[0]._id);
+                else
+                    alert("No Available city officials");
                 //alert(`City officials saved!`)
             })
             .catch((err) => {
@@ -30,15 +34,15 @@ function CreateDepartment(props) {
                 alert(`ERROR: ${err}`)
             })
         axios.get('http://localhost:9000/getMayorDetails')
-        .then((res) => {
-            if (res.data) {
-                setMayorDetails(res.data);
-                console.log(res.data)
-            }
-            else
-                alert("No details");
-        })
-        .catch((err) => alert("Error in fetching mayor details"));
+            .then((res) => {
+                if (res.data) {
+                    setMayorDetails(res.data);
+                    console.log(res.data)
+                }
+                else
+                    alert("No details");
+            })
+            .catch((err) => alert("Error in fetching mayor details"));
     }, []);
 
     const handleName = (e) => {
@@ -57,7 +61,7 @@ function CreateDepartment(props) {
     }
 
     const handleSubmit = (e) => {
-        console.log("Submitting candidate registration", policies);
+        console.log("Submitting department registration", policies);
         try {
             axios.post("http://localhost:9000/registerDepartment", {
                 name: name,

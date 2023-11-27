@@ -104,7 +104,7 @@ app.patch("/companyUnassignContract", async (req, res) => {
     try {
         await Contract.updateOne(query, updateDoc).then(async (result) => {
             console.log(result)
-            await ContractRequest.deleteOne({companyId: req.body.company_id, contractId: req.body.contract_id}).then(async (result2) => {
+            await ContractRequest.deleteOne({ companyId: req.body.company_id, contractId: req.body.contract_id }).then(async (result2) => {
                 console.log(result)
                 res.status(200).send(result2)
             })
@@ -121,7 +121,7 @@ app.delete("/deleteContractRequest", async (req, res) => {
     console.log(`deleteContractRequest: company_id ${req.query.company_id}`)
     console.log(`deleteContractRequest: contract_id ${req.query.contract_id}`)
     try {
-        await ContractRequest.deleteOne({companyId: req.query.company_id, contractId: req.query.contract_id}).then(async (result) => {
+        await ContractRequest.deleteOne({ companyId: req.query.company_id, contractId: req.query.contract_id }).then(async (result) => {
             console.log(result)
             res.status(200).send(result)
         })
@@ -136,19 +136,19 @@ app.patch("/sponsorCandidate", async (req, res) => {
     console.log("sponsorCandidate: ")
     console.log(`sponsorCandidate: company_id ${req.body.company_id}`)
     console.log(`sponsorCandidate: candidate_id ${req.body.candidate_id}`)
-    
+
     try {
         // Get the candidate
-        await Candidate.findOne({_id: req.body.candidate_id}).then(async (candidate) => {
+        await Candidate.findOne({ _id: req.body.candidate_id }).then(async (candidate) => {
             var sponsors = candidate.sponsors
             var canSponsor = true
-            for(const sponsorID of sponsors) {
-                if(sponsorID == req.body.company_id) {
+            for (const sponsorID of sponsors) {
+                if (sponsorID == req.body.company_id) {
                     canSponsor = false;
                     break;
                 }
             }
-            if(canSponsor) {
+            if (canSponsor) {
                 const query = {
                     _id: req.body.candidate_id,
                 }
@@ -180,12 +180,12 @@ app.get("/getDepartmentByUserID", async (req, res) => {
     console.log(`getDepartmentByUserID: user_id: ${req.query.user_id}`)
     try {
         //Get the city official
-        await Cityofficials.findOne({userId: req.query.user_id}).then(async (official) => {
+        await Cityofficials.findOne({ userId: req.query.user_id }).then(async (official) => {
             console.log(official)
-            if(official !== null) {
+            if (official !== null) {
                 //Get their department
-                await Department.findOne({cityOfficialID: official._id}).then(async (dept) => {
-                    if(dept != null) {
+                await Department.findOne({ cityOfficialID: official._id }).then(async (dept) => {
+                    if (dept != null) {
                         res.status(200).send(dept)
                     }
                     else {
@@ -209,14 +209,14 @@ app.get("/getComplaints", async (req, res) => {
     console.log(`getComplaints: user_id: ${req.query.user_id}`)
     try {
         //Get the city official
-        await Cityofficials.findOne({userId: req.query.user_id}).then(async (official) => {
+        await Cityofficials.findOne({ userId: req.query.user_id }).then(async (official) => {
             console.log(official)
             //Get their department
-            await Department.findOne({cityOfficialID: official._id}).then(async (dept) => {
-                await Complaint.find({departmentId: dept._id}).then(async (complaints) => {
+            await Department.findOne({ cityOfficialID: official._id }).then(async (dept) => {
+                await Complaint.find({ departmentId: dept._id }).then(async (complaints) => {
                     var responses = []
-                    for(const response of complaints) {
-                        await User.findOne({_id: response.userId},{firstName: 1, lastName: 1}).then(async (citizen) => {
+                    for (const response of complaints) {
+                        await User.findOne({ _id: response.userId }, { firstName: 1, lastName: 1 }).then(async (citizen) => {
                             responses.push({
                                 _id: response._id,
                                 user: `${citizen.firstName} ${citizen.lastName}`,
@@ -240,14 +240,14 @@ app.get("/getFeedback", async (req, res) => {
     console.log(`getFeedback: user_id: ${req.query.user_id}`)
     try {
         //Get the city official
-        await Cityofficials.findOne({userId: req.query.user_id}).then(async (official) => {
+        await Cityofficials.findOne({ userId: req.query.user_id }).then(async (official) => {
             console.log(official)
             //Get their department
-            await Department.findOne({cityOfficialID: official._id}).then(async (dept) => {
-                await Feedback.find({departmentId: dept._id}).then(async (feedback) => {
+            await Department.findOne({ cityOfficialID: official._id }).then(async (dept) => {
+                await Feedback.find({ departmentId: dept._id }).then(async (feedback) => {
                     var responses = []
-                    for(const response of feedback) {
-                        await User.findOne({_id: response.userId},{firstName: 1, lastName: 1}).then(async (citizen) => {
+                    for (const response of feedback) {
+                        await User.findOne({ _id: response.userId }, { firstName: 1, lastName: 1 }).then(async (citizen) => {
                             responses.push({
                                 _id: response._id,
                                 user: `${citizen.firstName} ${citizen.lastName}`,
@@ -274,14 +274,14 @@ app.post("/promoteMayor", async (req, res) => {
             // mayor vote is an array of 1
             const today = new Date()
             //The vote has expired
-            if(today > mayorVote[0].endDate) {
+            if (today > mayorVote[0].endDate) {
                 // People actually registered as candidates
-                if(mayorVote[0].candidateID.length > 0) {
+                if (mayorVote[0].candidateID.length > 0) {
                     //Determine the winner in Mayor vote
-                    var newMayorCandidateID = '' 
+                    var newMayorCandidateID = ''
                     var highestVote = -1
-                    for(const candidateVote of mayorVote[0].yesCount) {
-                        if(candidateVote.votes > highestVote) {
+                    for (const candidateVote of mayorVote[0].yesCount) {
+                        if (candidateVote.votes > highestVote) {
                             newMayorCandidateID = candidateVote.candidateId
                             highestVote = candidateVote.votes
                         }
@@ -289,22 +289,22 @@ app.post("/promoteMayor", async (req, res) => {
                     //Delete the Mayor Vote
                     await MayorVotes.deleteMany().then(async (result) => {
                         // Get the candidate object that won
-                        await Candidate.findOne({_id: newMayorCandidateID}).then(async (candidate) => {
+                        await Candidate.findOne({ _id: newMayorCandidateID }).then(async (candidate) => {
                             //Get the information we need for mayor
                             const newMayorSponsors = candidate.sponsors
                             const newMayorUserID = candidate.userID
                             const newMayorBudget = 10000000
-                            const newMayorEndDate = moment(today).add(60, 'm').toDate()
+                            const newMayorEndDate = moment(today).add(3, 'm').toDate()
                             //Get the current Mayor's userID so we can update their privledges
                             await Mayor.find().then(async (mayors) => {
                                 var currentMayor = {}
                                 var lastDate = ''
-                                for(const mayor of mayors) {
-                                    if(lastDate === '') {
+                                for (const mayor of mayors) {
+                                    if (lastDate === '') {
                                         lastDate = mayor.endDate
                                         currentMayor = mayor
                                     }
-                                    if(mayor.endDate > lastDate) {
+                                    if (mayor.endDate > lastDate) {
                                         lastDate = mayor.endDate
                                         currentMayor = mayor
                                     }
@@ -329,7 +329,7 @@ app.post("/promoteMayor", async (req, res) => {
                                         startDate: today,
                                         endDate: newMayorEndDate,
                                     })
-                                    
+
                                     await newMayorVote.save()
 
                                     //Update User privledges for both currentMayor and previousMayor
@@ -385,12 +385,12 @@ app.post("/promoteMayor", async (req, res) => {
                         await Mayor.find().then(async (mayors) => {
                             var currentMayor = {}
                             var lastDate = ''
-                            for(const mayor of mayors) {
-                                if(lastDate === '') {
+                            for (const mayor of mayors) {
+                                if (lastDate === '') {
                                     lastDate = mayor.endDate
                                     currentMayor = mayor
                                 }
-                                if(mayor.endDate > lastDate) {
+                                if (mayor.endDate > lastDate) {
                                     lastDate = mayor.endDate
                                     currentMayor = mayor
                                 }
@@ -505,20 +505,23 @@ app.get("/getAllLawsAndVoteHistory", (req, res) => {
                         //Get the vote for that law - Only return the _id, userID array, yesCount, and noCount for the vote record
                         await LawVotes.find({ lawID: law._id }, { userID: 1, yesCount: 1, noCount: 1 }).then(async (voteHistory) => {
                             //Adding mayor details to the lawlist
-                            await User.findOne({_id: law.passedBy}).then(async (user) => {
-                                console.log(user)
-                                //Add the law and its associated Voting History to lawList
-                                lawList.push({
-                                    _id: law._id,
-                                    passedBy: `${user.firstName} ${user.lastName}`,
-                                    title: law.title,
-                                    description: law.description,
-                                    state: law.state,
-                                    department: dept[0],
-                                    vote_history: voteHistory[0],
-                                })
+                            await Mayor.findOne({ _id: law.passedBy }).then(async (mayor) => {
+                                await User.findOne({ _id: mayor.userId }).then(async (user) => {
+                                    console.log(user)
+                                    //Add the law and its associated Voting History to lawList
+                                    lawList.push({
+                                        _id: law._id,
+                                        passedBy: `${user.firstName} ${user.lastName}`,
+                                        title: law.title,
+                                        description: law.description,
+                                        state: law.state,
+                                        department: dept[0],
+                                        vote_history: voteHistory[0],
+                                    })
 
+                                })
                             })
+
                         })
                     })
                 }
@@ -702,6 +705,7 @@ app.get('/getMayorDetails', async (req, res) => {
         //console.log(userDetails)
         const obj = new Object({
             user_id: userDetails[0]._id,
+            mayor_id: currentMayor[0]._id,
             dateAppointed: currentMayor[0].dateAppointed,
             endDate: currentMayor[0].endDate,
             budget: currentMayor[0].budget,
@@ -776,7 +780,7 @@ app.get('/getCandidates', async (req, res) => {
             const user = await User.findById(candidate.userID);
             var sponsors = []
             for (const companyID of candidate.sponsors) {
-                await Company.findOne({_id: companyID}).then((company) => {
+                await Company.findOne({ _id: companyID }).then((company) => {
                     sponsors.push(company)
                 })
             }
@@ -1116,6 +1120,17 @@ app.post('/createEmployee', async (req, res) => {
     try {
         const emp = new Employee(req.body);
         console.log(emp);
+        try {
+            const filter = { _id: req.body.user_id };
+            const updateDoc = {
+                $set: { isCityOfficial: "No", isMayor: "No", isEmployee: "Yes" }
+            };
+            const options = { upsert: true };
+            await User.updateOne(filter, updateDoc, options);
+        }
+        catch (error) {
+            console.log("Error in updating userid");
+        }
         await emp.save();
         res.send(emp);
     } catch (error) {
@@ -1229,11 +1244,10 @@ app.get("/getContracts", async (req, res) => {
     }
 })
 
-app.get("/getContractRequests", async(req,res)=>
-{
-    try{
+app.get("/getContractRequests", async (req, res) => {
+    try {
         const reqs = await ContractRequest.find()
-       
+
         res.send(reqs)
 
     }
@@ -1301,12 +1315,11 @@ app.patch('/assignCompany/:contract_id', async (req, res) => {
         res.status(500).send(error);
     }
 });
-app.get('/getdepIdbyCO/:userId', async(req,res)=>
-{
+app.get('/getdepIdbyCO/:userId', async (req, res) => {
     const user = req.params.userId
     console.log(user)
 
-    try{
+    try {
         const CO = await Cityofficials.find();
         const depId = CO.find((c) => String(c.userId) === user);
 
@@ -1318,13 +1331,12 @@ app.get('/getdepIdbyCO/:userId', async(req,res)=>
             res.status(404).send("DepId not found");
         }
     }
-    catch(error){
+    catch (error) {
         res.status(500).send(error)
     }
 })
 
-app.post('/AddAnnouncement',async(req,res)=>
-{
+app.post('/AddAnnouncement', async (req, res) => {
     console.log(req.body)
     const alert = new Alert(req.body)
     const { userId, departmentId, Announcement } = req.body;
@@ -1340,13 +1352,12 @@ app.post('/AddAnnouncement',async(req,res)=>
 
         res.send(savedAlert);
     }
-    catch(error){
+    catch (error) {
         res.status(500).send(error)
     }
 })
 
-app.get("/getAlerts", async(req,res)=>
-{
+app.get("/getAlerts", async (req, res) => {
     const alerts = await Alert.find()
     res.send(alerts)
 })
