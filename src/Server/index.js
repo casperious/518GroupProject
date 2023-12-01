@@ -294,7 +294,7 @@ app.post("/promoteMayor", async (req, res) => {
                             const newMayorSponsors = candidate.sponsors
                             const newMayorUserID = candidate.userID
                             const newMayorBudget = 10000000
-                            const newMayorEndDate = moment(today).add(3, 'm').toDate()
+                            const newMayorEndDate = moment(today).add(1, 'year').toDate()
                             //Get the current Mayor's userID so we can update their privledges
                             await Mayor.find().then(async (mayors) => {
                                 var currentMayor = {}
@@ -584,7 +584,7 @@ app.post("/createLaw", async (req, res) => {
             console.log(`Law created! ${law}`)
             // Schedule update for Law State
             var currentDate = moment()
-            var pollClose = moment(currentDate).add(1, "m").toDate()
+            var pollClose = moment(currentDate).add(1, "day").toDate()
             console.log(pollClose);
             //Schedule Job
             console.log("createLaw: Schduling Update Law State")
